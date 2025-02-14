@@ -53,18 +53,21 @@ class SummarizeViewModel(
 
     fun summarizeStreaming(inputText: String) {
         _uiState.value = SummarizeUiState.Loading
-
+        // ai에 요청할 명령
         val prompt = "Summarize the following text for me: $inputText"
 
         viewModelScope.launch {
             try {
+                // 명령 실행
                 var outputContent = ""
                 generativeModel.generateContentStream(prompt)
                     .collect { response ->
+                        // 요청 성공
                         outputContent += response.text
                         _uiState.value = SummarizeUiState.Success(outputContent)
                     }
             } catch (e: Exception) {
+                // 요청 실패
                 _uiState.value = SummarizeUiState.Error(e.localizedMessage ?: "")
             }
         }

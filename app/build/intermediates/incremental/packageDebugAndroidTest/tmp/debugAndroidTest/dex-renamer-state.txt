@@ -1,4 +1,4 @@
-#Thu Feb 13 14:24:33 KST 2025
+#Thu Feb 13 15:27:09 KST 2025
 base.0=C\:\\Users\\mrhi\\AndroidStudioProjects\\mrhi3-ai-studio\\app\\build\\intermediates\\dex\\debugAndroidTest\\mergeExtDexDebugAndroidTest\\classes.dex
 base.1=C\:\\Users\\mrhi\\AndroidStudioProjects\\mrhi3-ai-studio\\app\\build\\intermediates\\dex\\debugAndroidTest\\mergeProjectDexDebugAndroidTest\\0\\classes.dex
 base.2=C\:\\Users\\mrhi\\AndroidStudioProjects\\mrhi3-ai-studio\\app\\build\\intermediates\\dex\\debugAndroidTest\\mergeProjectDexDebugAndroidTest\\13\\classes.dex

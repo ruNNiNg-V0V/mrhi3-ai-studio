@@ -39,20 +39,26 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
 
         setContent {
+            // 테마
             GenerativeAISample {
-                // A surface container using the 'background' color from the theme
+                // 최상위 뷰
                 Surface(
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
+                    // 내비컨트롤러
                     val navController = rememberNavController()
 
+                    // 내비 빌더
                     NavHost(navController = navController, startDestination = "menu") {
+                        // 내비 메뉴 및 클릭 이벤트
                         composable("menu") {
                             MenuScreen(onItemClicked = { routeId ->
+                                // 클릭된 뷰의 routeId에 따라 화면 전환
                                 navController.navigate(routeId)
                             })
                         }
+                        // 개별의 routeId를 갖는 뷰
                         composable("summarize") {
                             SummarizeRoute()
                         }

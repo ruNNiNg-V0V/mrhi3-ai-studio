@@ -58,8 +58,9 @@ internal fun SummarizeRoute(
     summarizeViewModel: SummarizeViewModel = viewModel(factory = GenerativeViewModelFactory)
 ) {
     val summarizeUiState by summarizeViewModel.uiState.collectAsState()
-
+    // 뷰 화면을 불러오는 컴포즈 함수
     SummarizeScreen(summarizeUiState, onSummarizeClicked = { inputText ->
+        // 입력된 텍스트로 클릭 이벤트 처리
         summarizeViewModel.summarizeStreaming(inputText)
     })
 }
@@ -93,6 +94,7 @@ fun SummarizeScreen(
             TextButton(
                 onClick = {
                     if (textToSummarize.isNotBlank()) {
+                        // 클릭 이벤트 발생
                         onSummarizeClicked(textToSummarize)
                     }
                 },
@@ -121,6 +123,7 @@ fun SummarizeScreen(
             }
 
             is SummarizeUiState.Success -> {
+                // 이벤트 발생 후 응답 요청 성공
                 Card(
                     modifier = Modifier
                         .padding(start = 16.dp, end = 16.dp, bottom = 16.dp)
@@ -157,6 +160,7 @@ fun SummarizeScreen(
             }
 
             is SummarizeUiState.Error -> {
+                // 이벤트 발생 후 응답 요청 실패
                 Card(
                     modifier = Modifier
                         .padding(horizontal = 16.dp)
