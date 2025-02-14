@@ -87,3 +87,12 @@ fun summarizeStreaming(inputText: String) {
 }
 ```
 
+---
+
+## 🔥 프로젝트 분석 흐름
+1. **`MainActivity`가 실행됩니다.**
+2. **`SummarizeRoute`로 화면 전환 및 구성, `onSummarizeClicked(textToSummarize)`를 통해 이벤트가 처리됩니다.**
+3. **SummarizeViewModel의 `summarizeStreaming`을 통해 AI 요약 요청이 수행됩니다.**
+4. **요약 결과는 SummarizeScreen에서 `SummarizeUiState.Success` 또는 `SummarizeUiState.Error` 상태로 반환됩니다.**
+
+✅ AI 기능을 활용하여 텍스트 요약, 이미지 분석, 채팅 기능 등을 수행할 수 있습니다.
