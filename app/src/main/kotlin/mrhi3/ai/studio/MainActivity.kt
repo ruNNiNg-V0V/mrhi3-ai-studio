@@ -14,11 +14,13 @@
  * limitations under the License.
  */
 
+
 package mrhi3.ai.studio
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -32,12 +34,13 @@ import mrhi3.ai.studio.feature.chat.ChatRoute
 import mrhi3.ai.studio.feature.multimodal.PhotoReasoningRoute
 import mrhi3.ai.studio.feature.text.SummarizeRoute
 import mrhi3.ai.studio.ui.theme.GenerativeAISample
+import mrhi3.ai.studio.ui.theme.setTopAppBar
+
 
 class MainActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
         setContent {
             // 테마
             GenerativeAISample {
@@ -46,27 +49,31 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    // 내비컨트롤러
-                    val navController = rememberNavController()
+                    Column {
 
-                    // 내비 빌더
-                    NavHost(navController = navController, startDestination = "menu") {
-                        // 내비 메뉴 및 클릭 이벤트
-                        composable("menu") {
-                            MenuScreen(onItemClicked = { routeId ->
-                                // 클릭된 뷰의 routeId에 따라 화면 전환
-                                navController.navigate(routeId)
-                            })
-                        }
-                        // 개별의 routeId를 갖는 뷰
-                        composable("summarize") {
-                            SummarizeRoute()
-                        }
-                        composable("photo_reasoning") {
-                            PhotoReasoningRoute()
-                        }
-                        composable("chat") {
-                            ChatRoute()
+                        setTopAppBar()
+
+                        // 내비 컨트롤러
+                        val navController = rememberNavController()
+                        // 내비 빌더
+                        NavHost(navController = navController, startDestination = "menu") {
+                            // 내비 메뉴 및 클릭 이벤트
+                            composable("menu") {
+                                MenuScreen(onItemClicked = { routeId ->
+                                    // 클릭된 뷰의 routeId에 따라 화면 전환
+                                    navController.navigate(routeId)
+                                })
+                            }
+                            // 개별 routeId를 갖는 뷰
+                            composable("summarize") {
+                                SummarizeRoute()
+                            }
+                            composable("photo_reasoning") {
+                                PhotoReasoningRoute()
+                            }
+                            composable("chat") {
+                                ChatRoute()
+                            }
                         }
                     }
                 }
