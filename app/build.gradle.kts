@@ -18,6 +18,8 @@ plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
     id("com.google.android.libraries.mapsplatform.secrets-gradle-plugin")
+    id("kotlin-kapt")
+    id("com.google.gms.google-services")
 }
 
 android {
@@ -92,4 +94,17 @@ dependencies {
     debugImplementation("androidx.compose.ui:ui-test-manifest")
 
     implementation("com.google.ai.client.generativeai:generativeai:0.9.0")
+
+    // firebase
+    implementation(platform("com.google.firebase:firebase-bom:32.7.2"))
+    implementation("androidx.multidex:multidex:2.0.1")
+    implementation("com.google.firebase:firebase-auth-ktx")
+    implementation("com.google.android.gms:play-services-auth:20.7.0")
+
+    implementation("com.google.firebase:firebase-firestore")
+    implementation("com.google.firebase:firebase-storage-ktx:20.3.0")
+    implementation("com.github.bumptech.glide:glide:4.16.0")
+    implementation("com.firebaseui:firebase-ui-storage:8.0.2")
+    implementation("com.google.firebase:firebase-messaging-ktx:23.2.1")
+    implementation("com.google.firebase:firebase-analytics-ktx")
 }
