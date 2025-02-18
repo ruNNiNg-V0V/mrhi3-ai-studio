@@ -37,4 +37,12 @@
     <!-- Chat sample strings -->
     <string name="chat_label">Message</string>
     <string name="action_send">Send</string>
+
+    <!-- firebase id & pw -->
+    <string name="id">grapduck@gmail.com</string>
+    <string name="pw">grap030196</string>
+
+    <!-- TopAppBar -->
+    <string name="arrowBack">뒤로가기</string>
+    <string name="firebase">파이어베이스</string>
 </resources>

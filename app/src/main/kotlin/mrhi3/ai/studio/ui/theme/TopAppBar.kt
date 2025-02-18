@@ -13,6 +13,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import mrhi3.ai.studio.R
+import mrhi3.ai.studio.firebase.Connection
 
 @Composable
 fun setTopAppBar() {
@@ -24,28 +25,40 @@ fun setTopAppBar() {
         title = { Text(appName) },
         navigationIcon = {
             IconButton(onClick = {
-                // 게임 선택 페이지로
             }) {
+                val desc = context.getString(R.string.arrowBack)
                 Icon(
                     imageVector = Icons.Default.ArrowBack,
-                    contentDescription = "뒤로가기"
+                    contentDescription = desc
                 )
             }
         },
         actions = {
             IconButton(onClick = {
-                // Firebase 페이지로
+                // 파이어베이스 '연결' 클래스
+                val connection = Connection()
+                // 사용자 정보가 없다면 로그인할 것
+                if (connection.auth.currentUser == null) {
+                    val id = context.getString(R.string.id)
+                    val pw = context.getString(R.string.pw)
+                    connection.signIn(id, pw)
+                } else {
+                    // 파이어스토어 데이터 불러오기
+                    connection.readData()
+                }
             }) {
-                getFirebaseIcon()
+                val icon = R.drawable.firebase_full_color
+                val desc = context.getString(R.string.firebase)
+                getIcon(icon, desc)
             }
         }
     )
 }
 
 @Composable
-fun getFirebaseIcon() {
+fun getIcon(icon: Int, desc: String) {
     Icon(
-        painter = painterResource(id = R.drawable.firebase_full_color),
-        contentDescription = "파이어베이스"
+        painter = painterResource(id = icon),
+        contentDescription = desc
     )
 }
