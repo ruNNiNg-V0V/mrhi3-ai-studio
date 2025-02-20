@@ -13,7 +13,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import mrhi3.ai.studio.ui.theme.GenerativeAISample
 import mrhi3.ai.studio.ui.theme.setTopAppBar
 
-class GameListActivity: ComponentActivity() {
+class GameListActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
@@ -25,26 +25,30 @@ class GameListActivity: ComponentActivity() {
                     color = MaterialTheme.colorScheme.background
                 ) {
                     Column {
-                        setTopAppBar()
+                        setTopAppBar("GameList")
+                        // TODO 게임이 완성되면 Main과 같이 네비 적용할 것
+                        readData()
                     }
                 }
             }
         }
     }
+}
 
-    @Preview
-    @Composable
-    fun prev(){
+@Preview
+@Composable
+fun prev() {
     // 테마
-        GenerativeAISample {
-            // 최상위 뷰
-            Surface(
-                modifier = Modifier.fillMaxSize(),
-                color = MaterialTheme.colorScheme.background
-            ) {
-                Column {
-                    setTopAppBar()
-                }
+    GenerativeAISample {
+        // 최상위 뷰
+        Surface(
+            modifier = Modifier.fillMaxSize(),
+            color = MaterialTheme.colorScheme.background
+        ) {
+            Column {
+                setTopAppBar("GameList")
+                // TODO 게임이 완성되면 Main과 같이 네비 적용할 것
+                readData()
             }
         }
     }

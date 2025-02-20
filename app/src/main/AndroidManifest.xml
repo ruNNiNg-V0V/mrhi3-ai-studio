@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!-- Copyright 2023 Google LLC
+<?xml version="1.0" encoding="utf-8"?><!-- Copyright 2023 Google LLC
 
      Licensed under the Apache License, Version 2.0 (the "License");
      you may not use this file except in compliance with the License.
@@ -17,7 +16,6 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <application
-        android:theme="@style/Theme.Emptything"
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
@@ -25,6 +23,7 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
+        android:theme="@style/Theme.Emptything"
         tools:targetApi="31">
         <activity
             android:name=".MainActivity"
@@ -36,6 +35,9 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity
+            android:name=".GameListActivity"
+            android:exported="false" />
     </application>
 
 </manifest>

@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-
 package mrhi3.ai.studio
 
 import android.os.Bundle
@@ -36,7 +35,6 @@ import mrhi3.ai.studio.feature.text.SummarizeRoute
 import mrhi3.ai.studio.ui.theme.GenerativeAISample
 import mrhi3.ai.studio.ui.theme.setTopAppBar
 
-
 class MainActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -51,7 +49,7 @@ class MainActivity : ComponentActivity() {
                 ) {
                     Column {
 
-                        setTopAppBar()
+                        setTopAppBar("Main")
 
                         // 내비 컨트롤러
                         val navController = rememberNavController()
@@ -80,24 +78,33 @@ class MainActivity : ComponentActivity() {
             }
         }
     }
+}
 
-    @Preview(showSystemUi = true)
-    @Composable
-    fun SimpleComposablePreview() {
-        GenerativeAISample {
-            // A surface container using the 'background' color from the theme
-            Surface(
-                modifier = Modifier.fillMaxSize(),
-                color = MaterialTheme.colorScheme.background
-            ) {
+@Preview(showSystemUi = true)
+@Composable
+fun SimpleComposablePreview() {
+    GenerativeAISample {
+        // 최상위 뷰
+        Surface(
+            modifier = Modifier.fillMaxSize(),
+            color = MaterialTheme.colorScheme.background
+        ) {
+            Column {
+
+                setTopAppBar("Main")
+
+                // 내비 컨트롤러
                 val navController = rememberNavController()
-
+                // 내비 빌더
                 NavHost(navController = navController, startDestination = "menu") {
+                    // 내비 메뉴 및 클릭 이벤트
                     composable("menu") {
                         MenuScreen(onItemClicked = { routeId ->
+                            // 클릭된 뷰의 routeId에 따라 화면 전환
                             navController.navigate(routeId)
                         })
                     }
+                    // 개별 routeId를 갖는 뷰
                     composable("summarize") {
                         SummarizeRoute()
                     }
