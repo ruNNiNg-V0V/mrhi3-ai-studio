@@ -31,41 +31,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.google.firebase.firestore.FirebaseFirestore
-import androidx.compose.runtime.*
-import kotlinx.coroutines.tasks.await
-
-// 파이어베이스 불러오기 예시 데이터 클래스
-data class Source(
-    val id: String,
-    val content: String,
-    val date: String,
-    val email: String
-)
+import mrhi3.ai.studio.firebase.Source
+import mrhi3.ai.studio.firebase.getData
 
 @Composable
 fun readData() {
-    val db = FirebaseFirestore.getInstance()
-    var sourceList by remember { mutableStateOf(listOf<Source>()) }
-
-    LaunchedEffect(Unit) {
-        try {
-            val documents = db.collection("news").get().await()
-            val sources = documents.map { document ->
-                Source(
-                    id = document.id,
-                    content = document.getString("content") ?: "",
-                    date = document.getString("date") ?: "",
-                    email = document.getString("email") ?: ""
-                )
-            }
-            sourceList = sources
-        } catch (e: Exception) {
-            println("Error getting documents: $e")
-        }
-    }
-
-    sourceScreen(sourceList)
+    sourceScreen(getData())
 }
 
 @Composable
