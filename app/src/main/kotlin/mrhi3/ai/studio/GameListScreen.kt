@@ -14,18 +14,37 @@
  * limitations under the License.
  */
 
+@file:OptIn(ExperimentalMaterial3Api::class)
+
 package mrhi3.ai.studio
 
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material3.Card
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ExposedDropdownMenuBox
+import androidx.compose.material3.ExposedDropdownMenuDefaults
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
+import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -41,6 +60,79 @@ fun readData() {
 
 @Composable
 fun sourceScreen(sources: List<Source>) {
+
+    /**
+     * TODO -> 게임 저장 구현 후 진행할 것
+     *  드롭다운 메뉴와 새로고침 버튼 추가
+     *  드롭다운 메뉴는 리스팅된 게임을 필터링
+     *  새로고침은 readData() 다시 호출
+     */
+
+    var expanded by remember { mutableStateOf(false) }
+    var selectedSource by remember { mutableStateOf<Source?>(null) }
+    var currentText by remember { mutableStateOf("") }
+
+    /**
+     * onClick에서 Composable 함수를 호출하는 방법
+     * Boolean 타입의 remember 변수를 선언한다, 기본 값은 false
+     * if(변수명) { 호출할 함수 }
+     * 위와 같이 작성 후 onClick 이벤트에서 변수를 true로 변경
+     */
+    var haveToRefresh by remember { mutableStateOf(false) }
+
+    if (haveToRefresh) {
+        readData()
+    }
+
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = Modifier.padding(16.dp)
+    ) {
+        // 게임 필터링
+        ExposedDropdownMenuBox(
+            expanded = expanded,
+            onExpandedChange = { expanded = !expanded },
+            modifier = Modifier.weight(1f) // Take up available space
+        ) {
+            TextField(
+                value = selectedSource?.id ?: currentText,
+                onValueChange = { currentText = it },
+                readOnly = true, // Prevent manual text input
+                label = { Text("category") },
+                trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) },
+                modifier = Modifier.menuAnchor() // Attach to the DropdownMenu
+            )
+            DropdownMenu(
+                expanded = expanded,
+                onDismissRequest = { expanded = false },
+                modifier = Modifier.exposedDropdownSize()
+            ) {
+                sources.forEach { source ->
+                    DropdownMenuItem(
+                        text = { Text(source.id) },
+                        onClick = {
+                            selectedSource = source
+                            expanded = false
+                        }
+                    )
+                }
+            }
+        }
+
+        Spacer(modifier = Modifier.width(16.dp))
+
+        // 새로고침 버튼
+        IconButton(onClick = {
+            haveToRefresh = true
+        }) {
+            Icon(
+                imageVector = Icons.Filled.Refresh,
+                contentDescription = "Refresh"
+            )
+        }
+    }
+
+    // 게임 리스트
     LazyColumn(
         Modifier
             .padding(top = 16.dp, bottom = 16.dp)

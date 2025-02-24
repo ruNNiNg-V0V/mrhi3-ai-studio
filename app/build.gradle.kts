@@ -95,6 +95,8 @@ dependencies {
 
     implementation("com.google.ai.client.generativeai:generativeai:0.9.0")
 
+    implementation("com.google.code.gson:gson:2.12.1")
+
     // firebase
     implementation(platform("com.google.firebase:firebase-bom:32.7.2"))
     implementation("androidx.multidex:multidex:2.0.1")
