@@ -19,9 +19,21 @@
     <string name="menu_reason_title">Generate text from text-and-image input (multimodal)</string>
     <string name="menu_summarize_description">Sample app that summarizes text</string>
     <string name="menu_summarize_title">Generate text from text-only input</string>
+    <string name="menu_wordscramble_description">Play a word scramble game with AI-generated words and handwriting recognition</string>
+    <string name="menu_wordscramble_title">Word Scramble</string>
     <string name="reason_hint">Upload an image and then ask a question</string>
     <string name="reason_label">Question</string>
     <string name="summarize_hint">Enter text to summarize</string>
     <string name="summarize_label">Text</string>
+    <string name="wordscramble_analyzing">분석 중입니다...</string>
+    <string name="wordscramble_answer_hint">정답 입력</string>
+    <string name="wordscramble_back">뒤로 가기</string>
+    <string name="wordscramble_correct">정답입니다!</string>
+    <string name="wordscramble_error">오류가 발생했습니다</string>
+    <string name="wordscramble_new_game">새 게임</string>
+    <string name="wordscramble_no_text">텍스트를 인식할 수 없습니다..</string>
+    <string name="wordscramble_save">저장</string>
+    <string name="wordscramble_title">Word Scramble</string>
+    <string name="wordscramble_wrong">틀렸습니다. 다시 시도하세요.</string>
     <style name="Theme.Emptything" parent="android:Theme.Material.Light.NoActionBar"/>
 </resources>

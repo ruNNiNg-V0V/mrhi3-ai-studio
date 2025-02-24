@@ -61,13 +61,14 @@ android {
         kotlinCompilerExtensionVersion = "1.5.4"
     }
 }
-
 dependencies {
     implementation("androidx.core:core-ktx:1.9.0")
     implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.6.2")
     implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.6.2")
-    implementation("androidx.activity:activity-compose:1.8.1")
+    implementation("androidx.activity:activity-compose:1.8.1")  // 버전 변경
     implementation("androidx.navigation:navigation-compose:2.7.5")
+
+    implementation("androidx.cardview:cardview:1.0.0")
 
     // Required for one-shot operations (to use `ListenableFuture` from Guava Android)
     implementation("com.google.guava:guava:31.0.1-android")
@@ -82,6 +83,14 @@ dependencies {
     implementation("androidx.compose.material3:material3")
 
     implementation("io.coil-kt:coil-compose:2.5.0")
+    implementation("androidx.appcompat:appcompat:1.6.1")  // 버전 변경
+    implementation("com.google.android.material:material:1.11.0")
+    implementation("androidx.activity:activity:1.8.1")  // 버전 변경
+    implementation("androidx.constraintlayout:constraintlayout:2.1.4")  // 버전 변경
+
+    // ML Kit 의존성 추가
+    implementation("com.google.mlkit:text-recognition:16.0.0")
+    implementation("com.google.mlkit:text-recognition-korean:16.0.0")
 
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.1.5")
@@ -92,4 +101,6 @@ dependencies {
     debugImplementation("androidx.compose.ui:ui-test-manifest")
 
     implementation("com.google.ai.client.generativeai:generativeai:0.9.0")
+
+    implementation ("com.google.code.gson:gson:2.10.1")
 }
