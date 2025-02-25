@@ -45,4 +45,10 @@
     <!-- TopAppBar -->
     <string name="arrowBack">뒤로가기</string>
     <string name="firebase">파이어베이스</string>
+
+    <!-- Game Categories -->
+    <string name="MultiChoice">MultiChoice</string>
+    <string name="WordScramble">WordScramble</string>
+    <string name="Combination">Combination</string>
+    <string name="MatchingCards">MatchingCards</string>
 </resources>

@@ -47,6 +47,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -69,50 +70,54 @@ fun sourceScreen(sources: List<Source>) {
      */
 
     var expanded by remember { mutableStateOf(false) }
-    var selectedSource by remember { mutableStateOf<Source?>(null) }
     var currentText by remember { mutableStateOf("") }
 
-    /**
-     * onClick에서 Composable 함수를 호출하는 방법
-     * Boolean 타입의 remember 변수를 선언한다, 기본 값은 false
-     * if(변수명) { 호출할 함수 }
-     * 위와 같이 작성 후 onClick 이벤트에서 변수를 true로 변경
-     */
-    var haveToRefresh by remember { mutableStateOf(false) }
+    // 게임 리스트는 이 변수로 나타낸다, 이 변수에 변동이 있으면 리스트에 반영됨
+    var filteredSources by remember { mutableStateOf(listOf<Source>()) }
 
-    if (haveToRefresh) {
-        readData()
+    // 초기 필터 상태
+    if (filteredSources.isEmpty()) {
+        filteredSources = sources
     }
 
     Row(
         verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier.padding(16.dp)
     ) {
-        // 게임 필터링
         ExposedDropdownMenuBox(
             expanded = expanded,
             onExpandedChange = { expanded = !expanded },
-            modifier = Modifier.weight(1f) // Take up available space
+            modifier = Modifier.weight(1f)
         ) {
+            val context = LocalContext.current
+            val categories = listOf(
+                context.getString(R.string.MultiChoice),
+                context.getString(R.string.WordScramble),
+                context.getString(R.string.MatchingCards),
+                context.getString(R.string.Combination)
+            )
             TextField(
-                value = selectedSource?.id ?: currentText,
+                // TODO 게임 적용 후 카테고리를 적용할 것
+                value = currentText,
                 onValueChange = { currentText = it },
-                readOnly = true, // Prevent manual text input
+                readOnly = true,
                 label = { Text("category") },
                 trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) },
-                modifier = Modifier.menuAnchor() // Attach to the DropdownMenu
+                modifier = Modifier.menuAnchor()
             )
             DropdownMenu(
                 expanded = expanded,
                 onDismissRequest = { expanded = false },
                 modifier = Modifier.exposedDropdownSize()
             ) {
-                sources.forEach { source ->
+                categories.forEach { category ->
                     DropdownMenuItem(
-                        text = { Text(source.id) },
+                        // TODO 게임 적용 후 카테고리에 맞게 필터링할 것
+                        text = { Text(category) },
                         onClick = {
-                            selectedSource = source
+                            currentText = category
                             expanded = false
+                            // filteredSources = sources.filter { it.content == source.content }
                         }
                     )
                 }
@@ -121,9 +126,8 @@ fun sourceScreen(sources: List<Source>) {
 
         Spacer(modifier = Modifier.width(16.dp))
 
-        // 새로고침 버튼
         IconButton(onClick = {
-            haveToRefresh = true
+            filteredSources = sources
         }) {
             Icon(
                 imageVector = Icons.Filled.Refresh,
@@ -132,12 +136,11 @@ fun sourceScreen(sources: List<Source>) {
         }
     }
 
-    // 게임 리스트
     LazyColumn(
         Modifier
             .padding(top = 16.dp, bottom = 16.dp)
     ) {
-        items(sources) { source ->
+        items(filteredSources) { source ->
             Card(
                 modifier = Modifier
                     .fillMaxWidth()
