@@ -15,5 +15,5 @@
 -->
 <resources>
 
-    <style name="Theme.Emptything" parent="android:Theme.Material.Light.NoActionBar" />
+    <style name="Theme.EmptyThing" parent="android:Theme.Material.Light.NoActionBar" />
 </resources>

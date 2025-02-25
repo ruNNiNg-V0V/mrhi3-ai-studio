@@ -25,13 +25,18 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import mrhi3.ai.studio.feature.chat.ChatRoute
+import mrhi3.ai.studio.feature.chat.ChatViewModel
 import mrhi3.ai.studio.feature.multimodal.PhotoReasoningRoute
 import mrhi3.ai.studio.feature.text.SummarizeRoute
+import mrhi3.ai.studio.feature.wordscramble.WordScrambleScreen
+import mrhi3.ai.studio.feature.wordscramble.WordScrambleViewModelFactory
 import mrhi3.ai.studio.ui.theme.GenerativeAISample
 import mrhi3.ai.studio.ui.theme.setTopAppBar
 
@@ -71,6 +76,14 @@ class MainActivity : ComponentActivity() {
                             }
                             composable("chat") {
                                 ChatRoute()
+                            }
+                            // Word Scramble 게임 화면
+                            composable("wordscramble") {
+                                val chatViewModel = viewModel<ChatViewModel>(factory = GenerativeViewModelFactory)
+                                WordScrambleScreen(
+                                    onBackPressed = { navController.popBackStack() },
+                                    viewModelFactory = WordScrambleViewModelFactory(LocalContext.current, chatViewModel)
+                                )
                             }
                         }
                     }
@@ -114,9 +127,16 @@ fun SimpleComposablePreview() {
                     composable("chat") {
                         ChatRoute()
                     }
+                    // 프리뷰에서도 Word Scramble 화면 포함
+                    composable("wordscramble") {
+                        // 프리뷰에서는 실제 기능 없이 UI만 표시
+                        WordScrambleScreen(
+                            onBackPressed = {},
+                            viewModelFactory = WordScrambleViewModelFactory(LocalContext.current)
+                        )
+                    }
                 }
             }
         }
     }
 }
-

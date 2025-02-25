@@ -95,6 +95,7 @@ dependencies {
 
     implementation("com.google.ai.client.generativeai:generativeai:0.9.0")
 
+    // gson
     implementation("com.google.code.gson:gson:2.12.1")
 
     // firebase
