@@ -45,11 +45,8 @@ fun MenuScreen(
     val menuItems = listOf(
         MenuItem("summarize", R.string.menu_summarize_title, R.string.menu_summarize_description),
         MenuItem("photo_reasoning", R.string.menu_reason_title, R.string.menu_reason_description),
-        MenuItem("chat", R.string.menu_chat_title, R.string.menu_chat_description),
-        // WordScramble 메뉴 - 임시로 기존 리소스 재사용
-        MenuItem("wordscramble", R.string.menu_summarize_title, R.string.menu_summarize_description)
+        MenuItem("chat", R.string.menu_chat_title, R.string.menu_chat_description)
     )
-
     LazyColumn(
         Modifier
             .padding(top = 16.dp, bottom = 16.dp)
@@ -65,29 +62,15 @@ fun MenuScreen(
                         .padding(all = 16.dp)
                         .fillMaxWidth()
                 ) {
-                    // WordScramble 메뉴인 경우 하드코딩된 텍스트 사용
-                    if (menuItem.routeId == "wordscramble") {
-                        Text(
-                            text = "Word Scramble",
-                            style = MaterialTheme.typography.titleMedium
-                        )
-                        Text(
-                            text = "AI로 단어를 생성하고 그림으로 정답을 맞추는 게임",
-                            style = MaterialTheme.typography.bodyMedium,
-                            modifier = Modifier.padding(top = 8.dp)
-                        )
-                    } else {
-                        Text(
-                            text = stringResource(menuItem.titleResId),
-                            style = MaterialTheme.typography.titleMedium
-                        )
-                        Text(
-                            text = stringResource(menuItem.descriptionResId),
-                            style = MaterialTheme.typography.bodyMedium,
-                            modifier = Modifier.padding(top = 8.dp)
-                        )
-                    }
-
+                    Text(
+                        text = stringResource(menuItem.titleResId),
+                        style = MaterialTheme.typography.titleMedium
+                    )
+                    Text(
+                        text = stringResource(menuItem.descriptionResId),
+                        style = MaterialTheme.typography.bodyMedium,
+                        modifier = Modifier.padding(top = 8.dp)
+                    )
                     TextButton(
                         onClick = {
                             onItemClicked(menuItem.routeId)

@@ -51,19 +51,4 @@
     <string name="WordScramble">WordScramble</string>
     <string name="Combination">Combination</string>
     <string name="MatchingCards">MatchingCards</string>
-
-    <!-- Word Scramble 관련 문자열 추가 -->
-    <string name="menu_wordscramble_title">Word Scramble</string>
-    <string name="menu_wordscramble_description">Play a word scramble game with AI-generated words and handwriting recognition</string>
-    <string name="wordscramble_title">Word Scramble</string>
-    <string name="wordscramble_new_game">새 게임</string>
-    <string name="wordscramble_save">저장</string>
-    <string name="wordscramble_answer_hint">정답 입력</string>
-    <string name="wordscramble_correct">정답입니다!</string>
-    <string name="wordscramble_wrong">틀렸습니다. 다시 시도하세요.</string>
-    <string name="wordscramble_analyzing">분석 중입니다...</string>
-    <string name="wordscramble_no_text">텍스트를 인식할 수 없습니다..</string>
-    <string name="wordscramble_error">오류가 발생했습니다</string>
-    <string name="wordscramble_back">뒤로 가기</string>
-
 </resources>
