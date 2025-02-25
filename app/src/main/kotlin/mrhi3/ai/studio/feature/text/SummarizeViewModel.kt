@@ -54,7 +54,7 @@ class SummarizeViewModel(
     fun summarizeStreaming(inputText: String) {
         _uiState.value = SummarizeUiState.Loading
         // ai에 요청할 명령
-        val prompt = "Summarize the following text for me: $inputText"
+        val prompt = "$inputText"
 
         viewModelScope.launch {
             try {
