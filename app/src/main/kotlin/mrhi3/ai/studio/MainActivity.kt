@@ -66,7 +66,7 @@ class MainActivity : ComponentActivity() {
                             PhotoReasoningRoute()
                         }
                         composable("chat") {
-                            ChatRoute()
+                            MultiChoiceRoute()
                         }
                     }
                 }

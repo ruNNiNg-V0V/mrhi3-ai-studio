@@ -1,10 +1,7 @@
 package mrhi3.ai.studio
 
 import android.content.Context
-import android.os.Bundle
 import android.widget.Toast
-import androidx.activity.ComponentActivity
-import androidx.activity.compose.setContent
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
@@ -22,15 +19,25 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.ui.draw.shadow
+import androidx.lifecycle.viewmodel.compose.viewModel
+import mrhi3.ai.studio.feature.text.SummarizeViewModel
 
-class MultiChoiceActivity : ComponentActivity() {
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContent {
-            QuizGame()
-        }
-    }
+data class CountryOptions(
+    val country:String,
+    val capital:List<String>
+)
+
+@Composable
+internal fun MultiChoiceRoute(
+    summarizeViewModel: SummarizeViewModel = viewModel(factory = GenerativeViewModelFactory)
+) {
+    val summarizeUiState by summarizeViewModel.uiState.collectAsState()
+    // 특정 나라와 그 나라의 수도를 포함하는 수도 4를 json으로 받기
+    summarizeViewModel.getMultiChoiceSource(" ")
+    // 뷰 화면을 불러오는 컴포즈 함수
+    QuizGame()
 }
+
 
 @Composable
 fun BaseGameScreen(
@@ -44,18 +51,18 @@ fun BaseGameScreen(
         modifier = Modifier
             .fillMaxSize()
             .background(Color(0xFFF5F5F5))
-            .padding(16.dp)
+            .padding(0.dp)
     ) {
+
         // Title Bar
         Box(
             modifier = Modifier
                 .fillMaxWidth()
                 .height(64.dp)
                 .background(
-                    color = MaterialTheme.colorScheme.primary,
-                    shape = RoundedCornerShape(4.dp)
+                    color = MaterialTheme.colorScheme.primary
                 )
-                .shadow(4.dp)
+                .shadow(2.dp)
         ) {
             IconButton(
                 onClick = onBackPressed,
@@ -90,10 +97,10 @@ fun BaseGameScreen(
                 .fillMaxWidth()
                 .padding(top = 16.dp)
                 .background(
-                    color = Color(0xFFFFC107),
+                    color = Color(0xFFFFFF),
                     shape = RoundedCornerShape(8.dp)
                 )
-                .shadow(4.dp)
+                .shadow(2.dp)
         ) {
             content()
         }
@@ -136,10 +143,17 @@ fun BaseGameScreen(
     }
 }
 
+data class Question(val question: String, val options: List<String>, val answer: String)
+
+val questions = listOf(
+    Question("대한민국의 수도는?", listOf("평양", "파리", "도쿄", "서울"), "서울"),
+    Question("미국의 수도는?", listOf("뉴욕", "워싱턴 D.C.", "시카고", "로스앤젤레스"), "워싱턴 D.C."),
+    Question("프랑스의 수도는?", listOf("런던", "베를린", "마드리드", "파리"), "파리")
+)
+
 @Composable
 fun QuizGame() {
-    var question by remember { mutableStateOf("대한민국의 수도는?") }
-    val options = listOf("평양", "파리", "도쿄", "서울")
+    var currentQuestion by remember { mutableStateOf(questions.random()) }
     var selectedAnswer by remember { mutableStateOf<String?>(null) }
 
     val context = LocalContext.current
@@ -147,7 +161,7 @@ fun QuizGame() {
     BaseGameScreen(
         title = "사지선다 게임",
         onBackPressed = { /* 뒤로가기 처리 */ },
-        onNewGameClick = { startNewGame() },
+        onNewGameClick = { currentQuestion = questions.random() },
         onSaveClick = { saveGame() }
     ) {
         Column(
@@ -157,34 +171,46 @@ fun QuizGame() {
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Text(
-                text = question,
-                fontSize = 18.sp,
+                text = currentQuestion.question,
+                fontSize = 22.sp,
                 fontWeight = FontWeight.Bold,
                 modifier = Modifier.padding(vertical = 16.dp)
             )
 
-            options.forEach { option ->
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(vertical = 4.dp)
-                        .background(
-                            color = getColorForOption(option),
-                            shape = RoundedCornerShape(4.dp)
-                        )
-                ) {
-                    Button(
-                        onClick = {
-                            selectedAnswer = option
-                            checkAnswer(option, context)
-                        },
-                        colors = ButtonDefaults.buttonColors(containerColor = Color.Transparent),
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(48.dp)
-                            .padding(4.dp)
+            Column(
+                modifier = Modifier.weight(1f),
+                verticalArrangement = Arrangement.Center
+            ) {
+                currentQuestion.options.chunked(2).forEach { rowOptions ->
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceEvenly
                     ) {
-                        Text(text = option, color = Color.White)
+                        rowOptions.forEach { option ->
+                            Box(
+                                modifier = Modifier
+                                    .size(150.dp)
+                                    .padding(vertical = 4.dp)
+                                    .background(
+                                        color = getColorForOption(option),
+                                        shape = RoundedCornerShape(4.dp)
+                                    )
+                                    .shadow(2.dp),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                Button(
+                                    onClick = {
+                                        selectedAnswer = option
+                                        checkAnswer(option, context, currentQuestion.answer)
+                                    },
+                                    colors = ButtonDefaults.buttonColors(containerColor = Color.Transparent),
+                                    modifier = Modifier
+                                        .fillMaxSize()
+                                ) {
+                                    Text(text = option, color = Color.Black, fontSize = 20.sp)
+                                }
+                            }
+                        }
                     }
                 }
             }
@@ -192,20 +218,22 @@ fun QuizGame() {
     }
 }
 
+
+
 @Composable
 fun getColorForOption(option: String): Color {
     return when (option) {
-        "평양" -> Color(0xFFE57373)
-        "파리" -> Color(
+        "평양", "뉴욕", "런던" -> Color(0xFFE57373)
+        "파리", "워싱턴 D.C." -> Color(
             0xFFFFF176)
-        "도쿄" -> Color(0xFF81C784)
-        "서울" -> Color(0xFF64B5F6)
+        "도쿄", "시카고", "마드리드" -> Color(0xFF81C784)
+        "서울", "로스앤젤레스", "베를린" -> Color(0xFF64B5F6)
         else -> Color.Gray
     }
 }
 
-fun checkAnswer(selectedAnswer: String, context: Context) {
-    if (selectedAnswer == "서울") {
+fun checkAnswer(selectedAnswer: String, context: Context, correctAnswer: String) {
+    if (selectedAnswer == correctAnswer) {
         Toast.makeText(context, "정답입니다!", Toast.LENGTH_SHORT).show()
     } else {
         Toast.makeText(context, "틀렸습니다!", Toast.LENGTH_SHORT).show()

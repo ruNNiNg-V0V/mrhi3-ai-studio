@@ -36,7 +36,7 @@ class SummarizeViewModel(
     fun summarize(inputText: String) {
         _uiState.value = SummarizeUiState.Loading
 
-        val prompt = "Summarize the following text for me: $inputText"
+        val prompt = ""
 
         viewModelScope.launch {
             // Non-streaming
@@ -51,10 +51,32 @@ class SummarizeViewModel(
         }
     }
 
+    fun getMultiChoiceSource(input:String):String{
+        _uiState.value = SummarizeUiState.Loading
+        // ai에 요청할 명령
+        val prompt =input
+        var outputContent = ""
+        viewModelScope.launch {
+            try {
+                // 명령 실행
+                generativeModel.generateContentStream(prompt)
+                    .collect { response ->
+                        // 요청 성공
+                        outputContent += response.text
+                        _uiState.value = SummarizeUiState.Success(outputContent)
+                    }
+            } catch (e: Exception) {
+                // 요청 실패
+                _uiState.value = SummarizeUiState.Error(e.localizedMessage ?: "")
+            }
+        }
+        return outputContent
+    }
+
     fun summarizeStreaming(inputText: String) {
         _uiState.value = SummarizeUiState.Loading
         // ai에 요청할 명령
-        val prompt = "Summarize the following text for me: $inputText"
+        val prompt = ""
 
         viewModelScope.launch {
             try {
