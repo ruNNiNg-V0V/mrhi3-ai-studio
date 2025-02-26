@@ -20,11 +20,14 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.ui.draw.shadow
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.google.common.reflect.TypeToken
+import com.google.gson.Gson
+import com.google.gson.JsonParser
 import mrhi3.ai.studio.feature.text.SummarizeViewModel
 
 data class CountryOptions(
-    val country:String,
-    val capital:List<String>
+    val country: String,
+    val options: List<String>
 )
 
 @Composable
@@ -32,12 +35,18 @@ internal fun MultiChoiceRoute(
     summarizeViewModel: SummarizeViewModel = viewModel(factory = GenerativeViewModelFactory)
 ) {
     val summarizeUiState by summarizeViewModel.uiState.collectAsState()
-    // 특정 나라와 그 나라의 수도를 포함하는 수도 4를 json으로 받기
-    summarizeViewModel.getMultiChoiceSource(" ")
-    // 뷰 화면을 불러오는 컴포즈 함수
-    QuizGame()
-}
 
+    val result = summarizeViewModel.getMultiChoiceSource() // 결과가 문자열로 나옴
+
+    // 우선 result를 jsonObject로 변환
+    val jsonObject = JsonParser.parseString(result).asJsonObject
+
+    // jsonObject로 변환된 변수를 Gson으로 -> CountryOptions 타입이 변경됨
+    val countryOptions: CountryOptions = Gson().fromJson(jsonObject.toString(), object : TypeToken<CountryOptions>() {}.type)
+
+    // 뷰 화면을 불러오는 컴포즈 함수
+    QuizGame(countryOptions)
+}
 
 @Composable
 fun BaseGameScreen(
@@ -143,17 +152,9 @@ fun BaseGameScreen(
     }
 }
 
-data class Question(val question: String, val options: List<String>, val answer: String)
-
-val questions = listOf(
-    Question("대한민국의 수도는?", listOf("평양", "파리", "도쿄", "서울"), "서울"),
-    Question("미국의 수도는?", listOf("뉴욕", "워싱턴 D.C.", "시카고", "로스앤젤레스"), "워싱턴 D.C."),
-    Question("프랑스의 수도는?", listOf("런던", "베를린", "마드리드", "파리"), "파리")
-)
-
 @Composable
-fun QuizGame() {
-    var currentQuestion by remember { mutableStateOf(questions.random()) }
+fun QuizGame(countryOptions: CountryOptions) {
+    var currentQuestion by remember { mutableStateOf(countryOptions.options.random()) }
     var selectedAnswer by remember { mutableStateOf<String?>(null) }
 
     val context = LocalContext.current
@@ -161,7 +162,7 @@ fun QuizGame() {
     BaseGameScreen(
         title = "사지선다 게임",
         onBackPressed = { /* 뒤로가기 처리 */ },
-        onNewGameClick = { currentQuestion = questions.random() },
+        onNewGameClick = { currentQuestion = countryOptions.options.random() },
         onSaveClick = { saveGame() }
     ) {
         Column(
@@ -171,7 +172,7 @@ fun QuizGame() {
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Text(
-                text = currentQuestion.question,
+                text = "${countryOptions.country}의 수도는?",
                 fontSize = 22.sp,
                 fontWeight = FontWeight.Bold,
                 modifier = Modifier.padding(vertical = 16.dp)
@@ -181,7 +182,7 @@ fun QuizGame() {
                 modifier = Modifier.weight(1f),
                 verticalArrangement = Arrangement.Center
             ) {
-                currentQuestion.options.chunked(2).forEach { rowOptions ->
+                countryOptions.options.chunked(2).forEach { rowOptions ->
                     Row(
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.SpaceEvenly
@@ -192,7 +193,7 @@ fun QuizGame() {
                                     .size(150.dp)
                                     .padding(vertical = 4.dp)
                                     .background(
-                                        color = getColorForOption(option),
+                                        color = getColorForOption(option, countryOptions.options),
                                         shape = RoundedCornerShape(4.dp)
                                     )
                                     .shadow(2.dp),
@@ -201,7 +202,7 @@ fun QuizGame() {
                                 Button(
                                     onClick = {
                                         selectedAnswer = option
-                                        checkAnswer(option, context, currentQuestion.answer)
+                                        checkAnswer(option, context, countryOptions.options.last())
                                     },
                                     colors = ButtonDefaults.buttonColors(containerColor = Color.Transparent),
                                     modifier = Modifier
@@ -219,16 +220,20 @@ fun QuizGame() {
 }
 
 
-
 @Composable
-fun getColorForOption(option: String): Color {
-    return when (option) {
-        "평양", "뉴욕", "런던" -> Color(0xFFE57373)
-        "파리", "워싱턴 D.C." -> Color(
-            0xFFFFF176)
-        "도쿄", "시카고", "마드리드" -> Color(0xFF81C784)
-        "서울", "로스앤젤레스", "베를린" -> Color(0xFF64B5F6)
-        else -> Color.Gray
+fun getColorForOption(option: String, options: List<String>): Color {
+    val colors = listOf(
+        Color(0xFFE57373),  //첫 번째 옵션 색상
+        Color(0xFFFFF176),  //두 번째 옵션 색상
+        Color(0xFF81C784),  //세 번째 옵션 색상
+        Color(0xFF64B5F6)   //네 번째 옵션 색상
+    )
+
+    // 옵션 인덱스에 따라 색상 반환
+    return if (option in options) {
+        colors[options.indexOf(option) % colors.size]
+    } else {
+        Color.Gray
     }
 }
 
