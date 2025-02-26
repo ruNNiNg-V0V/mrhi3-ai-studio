@@ -28,10 +28,15 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.example.conbination.BaseGameScreenPreviewTest
 import mrhi3.ai.studio.feature.chat.ChatRoute
 import mrhi3.ai.studio.feature.multimodal.PhotoReasoningRoute
 import mrhi3.ai.studio.feature.text.SummarizeRoute
 import mrhi3.ai.studio.ui.theme.GenerativeAISample
+import mrhi3.ai.studio.feature.combination.CombinationViewModel
+import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.compose.ui.platform.LocalContext
+import com.example.conbination.getGameScreen
 
 class MainActivity : ComponentActivity() {
 
@@ -68,6 +73,9 @@ class MainActivity : ComponentActivity() {
                         composable("chat") {
                             ChatRoute()
                         }
+                        composable("combination") {
+                            getGameScreen()
+                        }
                     }
                 }
             }
@@ -99,6 +107,9 @@ class MainActivity : ComponentActivity() {
                     }
                     composable("chat") {
                         ChatRoute()
+                    }
+                    composable("combination") {
+                        getGameScreen()
                     }
                 }
             }

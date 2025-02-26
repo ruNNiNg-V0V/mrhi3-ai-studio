@@ -1,33 +1,30 @@
-package mrhi3.ai.studio.feature.combination
+package com.example.conbination
 
+import android.util.Log
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.Modifier
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
+import androidx.compose.ui.*
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
+import mrhi3.ai.studio.GenerativeViewModelFactory
+import mrhi3.ai.studio.R
+import mrhi3.ai.studio.feature.combination.CombinationView
+import mrhi3.ai.studio.feature.combination.CombinationViewModel
+import mrhi3.ai.studio.feature.combination.DataCombinationGame
 
 @Composable
 fun BaseGameScreen(
@@ -128,10 +125,39 @@ fun BaseGameScreen(
     }
 }
 
-// 사용 예시
-@Preview(showBackground = true)
 @Composable
-fun BaseGameScreenPreviewTest() {
+fun Prompt(): DataCombinationGame? {
+    val context = LocalContext.current
+    val comViewModel: CombinationViewModel = viewModel(factory = GenerativeViewModelFactory)
+
+    var sD: DataCombinationGame? = null
+
+    runBlocking {
+        sD = comViewModel.sendMessage(context.getString(R.string.combination_ex))
+    }
+
+    return sD
+}
+
+@Composable
+fun getGameScreen() {
+    //프롬포트를 실행하여 받은 데이터 클래스 값을 다음 항수에 넘겨줌
+    //Prompt() : 채팅모델에 sendMessage(포롬포트 메시지) 넘겨줌
+    //sendMessage() : messageToGson(result)로 json값 넘김
+    //messageToGson() : 데이터 클래스의 객체로 storedData를 리턴 리턴 리턴
+    val stored = Prompt()
+    BaseGameScreenPreviewTest(dataclass = stored)
+}
+
+
+@Composable
+fun BaseGameScreenPreviewTest(dataclass: DataCombinationGame?) {
+    @Composable
+    fun onNewGameClick() {
+        val stored = Prompt()
+        BaseGameScreenPreviewTest(dataclass = stored)
+    }
+
     MaterialTheme {
         BaseGameScreen(
             title = "게임 타이틀",
@@ -144,30 +170,12 @@ fun BaseGameScreenPreviewTest() {
                 modifier = Modifier.fillMaxSize(),
                 contentAlignment = Alignment.Center
             ) {
-
+                if(dataclass != null) {
+                    CombinationView(data = dataclass)
+                } else {
+                    Log.d("BaseGameScreenPreviewTest", "datas is null")
+                }
             }
         }
     }
 }
-
-
-
-/*@Composable
-fun CombinationPreview2(game: DataCombinationGame) {
-    CombinationGame(
-        topic = game.topic,
-        component1 = game.component1,
-        component2 = game.component2,
-        production = game.production,
-        hint = game.hint,
-        answer1 = game.answer1,
-        answer2 = game.answer2,
-        answer3 = game.answer3,
-        onAnswer1Click = game.onAnswer1Click,
-        onAnswer2Click = game.onAnswer2Click,
-        onAnswer3Click = game.onAnswer3Click
-    )
-}*/
-
-
-
