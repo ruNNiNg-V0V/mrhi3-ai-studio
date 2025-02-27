@@ -16,7 +16,6 @@
 
 package mrhi3.ai.studio
 
-import MatchingGame
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -67,7 +66,12 @@ class MainActivity : ComponentActivity() {
                             PhotoReasoningRoute()
                         }
                         composable("chat") {
-                            MatchingGame()
+                            BaseGameScreen(
+                                "게임 타이틀",
+                                {},
+                                {},
+                                {}
+                            )
                         }
                     }
                 }

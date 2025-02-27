@@ -24,8 +24,7 @@ data class Card(
 
 @Composable
 fun MatchingGame() {
-    val gameDataLeft = remember { mutableStateListOf<Card>() }
-    val gameDataRight = remember { mutableStateListOf<Card>() }
+    val gameData = remember { mutableStateListOf<Card>() }
     val firstCard = remember { mutableStateOf<Card?>(null) }
 
     fun setFirstCard(card: Card?) {
@@ -34,34 +33,31 @@ fun MatchingGame() {
 
     // 게임 데이터 초기화
     LaunchedEffect(Unit) {
-        initializeGameData(gameDataLeft, gameDataRight)
+        initializeGameData(gameData)
     }
 
     // 게임 화면 구현
     MatchingGameUI(
-        gameDataLeft = gameDataLeft,
-        gameDataRight = gameDataRight,
+        gameDataLeft = gameData,
+        //gameDataRight = gameDataRight,
         firstCard = firstCard,
         setFirstCard = ::setFirstCard
     )
 
-    if (gameDataLeft.all { it.removed }) {
+    if (gameData.all { it.removed }) {
         Text("Game Cleared!")
     }
 }
 
-fun initializeGameData(gameDataLeft: MutableList<Card>, gameDataRight: MutableList<Card>) {
-    val values = listOf("A", "A", "B", "B", "C", "C", "D", "D", "E", "E", "F", "F")
-    gameDataLeft.clear()
-    gameDataLeft.addAll(values.map { Card(it) }.shuffled())
-    gameDataRight.clear()
-    gameDataRight.addAll(values.map { Card(it) })
+fun initializeGameData(gameData: MutableList<Card>) {
+    val values = listOf("A", "a", "B", "b", "C", "c", "D", "d", "E", "e", "F", "f")
+    gameData.clear()
+    gameData.addAll(values.map { Card(it) }.shuffled())
 }
 
 @Composable
 fun MatchingGameUI(
     gameDataLeft: MutableList<Card>,
-    gameDataRight: MutableList<Card>,
     firstCard: MutableState<Card?>,
     setFirstCard: (Card?) -> Unit
 ) {
@@ -83,50 +79,19 @@ fun MatchingGameUI(
                     isSelected = firstCard.value == card,
                     onClick = {
                         if (firstCard.value == null) {
-                            setFirstCard(card)
                             card.revealed = true
                         } else if (firstCard.value != card) {
-                            if (firstCard.value!!.value == card.value) {
+                            if (firstCard.value!!.value.uppercase() == card.value.uppercase()) {
                                 firstCard.value!!.removed = true
                                 card.removed = true
+                                setFirstCard(null)
                             } else {
                                 // 새로운 카드가 선택되면 이전에 선택된 카드를 다시 뒤집기
                                 firstCard.value!!.revealed = false
                                 card.revealed = true
-                                setFirstCard(card)
                             }
                         }
-                    }
-                )
-            }
-        }
-
-        // 오른쪽 화면 (카드 뒷면)
-        LazyVerticalGrid(
-            columns = GridCells.Fixed(3),
-            modifier = Modifier.padding(16.dp),
-            verticalArrangement = Arrangement.spacedBy(8.dp),
-            horizontalArrangement = Arrangement.spacedBy(8.dp)
-        ) {
-            items(gameDataRight) { card ->
-                CardItem(
-                    card = card,
-                    isSelected = firstCard.value == card,
-                    onClick = {
-                        if (firstCard.value == null) {
-                            setFirstCard(card)
-                            card.revealed = true
-                        } else if (firstCard.value != card) {
-                            if (firstCard.value!!.value == card.value) {
-                                firstCard.value!!.removed = true
-                                card.removed = true
-                            } else {
-                                // 새로운 카드가 선택되면 이전에 선택된 카드를 다시 뒤집기
-                                firstCard.value!!.revealed = false
-                                card.revealed = true
-                                setFirstCard(card)
-                            }
-                        }
+                        setFirstCard(card)
                     }
                 )
             }
@@ -142,7 +107,7 @@ fun CardItem(
 ) {
     Box(
         modifier = Modifier
-            .size(200.dp, 150.dp)
+            .size(112.dp, 112.dp)
             .clickable { onClick() }
             .background(
                 color = if (card.removed) Color.Gray else Color(0xFF5D9CEC),
