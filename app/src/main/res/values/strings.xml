@@ -43,14 +43,6 @@
     <!-- Combination sample strings -->
     <string name="combination_label">Message</string>
     <string name="combination_send">Send</string>
-    <string name="combination_json_test">
-{
-  "q": "현 + ? -> 한복",
-  "k": "명주",
-  "c": ["바퀴", "명주", "책상"],
-  "h": ["천연 섬유", "고급 재료", "옷감 종류"]
-}
-    </string>
     <string name="combination_ex">
         "Set the topic to "Korean traditional culture."
 Randomly select one from the subcategories: instruments, clothing, food, or play.

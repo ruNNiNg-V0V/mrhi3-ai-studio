@@ -1,38 +1,40 @@
-package com.example.conbination
+package mrhi3.ai.studio
 
-import android.util.Log
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
-import androidx.compose.ui.*
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.viewmodel.compose.viewModel
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
-import mrhi3.ai.studio.GenerativeViewModelFactory
-import mrhi3.ai.studio.R
-import mrhi3.ai.studio.feature.combination.CombinationView
-import mrhi3.ai.studio.feature.combination.CombinationViewModel
-import mrhi3.ai.studio.feature.combination.DataCombinationGame
+import mrhi3.ai.studio.feature.combination.CombinationGame
 
 @Composable
 fun BaseGameScreen(
     title: String,
     onBackPressed: () -> Unit,
     onNewGameClick: () -> Unit,
-    onSaveClick: () -> Unit,
-    content: @Composable () -> Unit
+    onSaveClick: () -> Unit
 ) {
     Column(
         modifier = Modifier
@@ -84,7 +86,8 @@ fun BaseGameScreen(
                 .fillMaxWidth()
                 .padding(top = 16.dp)
         ) {
-            content()
+            // 게임 구성 화면이 들어갈 자리
+            CombinationGame()
         }
 
         // Button Row
@@ -120,61 +123,6 @@ fun BaseGameScreen(
                     fontSize = 16.sp,
                     color = Color.White
                 )
-            }
-        }
-    }
-}
-
-@Composable
-fun Prompt(): DataCombinationGame? {
-    val context = LocalContext.current
-    val comViewModel: CombinationViewModel = viewModel(factory = GenerativeViewModelFactory)
-
-    var sD: DataCombinationGame? = null
-
-    runBlocking {
-        sD = comViewModel.sendMessage(context.getString(R.string.combination_ex))
-    }
-
-    return sD
-}
-
-@Composable
-fun getGameScreen() {
-    //프롬포트를 실행하여 받은 데이터 클래스 값을 다음 항수에 넘겨줌
-    //Prompt() : 채팅모델에 sendMessage(포롬포트 메시지) 넘겨줌
-    //sendMessage() : messageToGson(result)로 json값 넘김
-    //messageToGson() : 데이터 클래스의 객체로 storedData를 리턴 리턴 리턴
-    val stored = Prompt()
-    BaseGameScreenPreviewTest(dataclass = stored)
-}
-
-
-@Composable
-fun BaseGameScreenPreviewTest(dataclass: DataCombinationGame?) {
-    @Composable
-    fun onNewGameClick() {
-        val stored = Prompt()
-        BaseGameScreenPreviewTest(dataclass = stored)
-    }
-
-    MaterialTheme {
-        BaseGameScreen(
-            title = "게임 타이틀",
-            onBackPressed = { },
-            onNewGameClick = { },
-            onSaveClick = { }
-        ) {
-            // 게임 콘텐츠가 들어갈 자리
-            Box(
-                modifier = Modifier.fillMaxSize(),
-                contentAlignment = Alignment.Center
-            ) {
-                if(dataclass != null) {
-                    CombinationView(data = dataclass)
-                } else {
-                    Log.d("BaseGameScreenPreviewTest", "datas is null")
-                }
             }
         }
     }
