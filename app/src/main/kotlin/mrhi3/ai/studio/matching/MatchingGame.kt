@@ -16,7 +16,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
 data class Card(
-    val value: String,
+    val value: String, // 얘는 키 값
+    val label: String, // 얘는 표시 값
     var revealed: Boolean = false,
     var removed: Boolean = false,
     val elevation: Dp = 4.dp
@@ -50,9 +51,28 @@ fun MatchingGame() {
 }
 
 fun initializeGameData(gameData: MutableList<Card>) {
-    val values = listOf("A", "a", "B", "b", "C", "c", "D", "d", "E", "e", "F", "f")
+    val values = listOf(
+        "A", "a",
+        "B", "b",
+        "C", "c",
+        "D", "d",
+        "E", "e",
+        "F", "f"
+    )
+    val labels = listOf(
+        "강원도", "감자",
+        "전라도", "김치",
+        "경상도", "사과",
+        "충청도", "딸기",
+        "경기도", "한우",
+        "제주도", "감귤"
+    )
     gameData.clear()
-    gameData.addAll(values.map { Card(it) }.shuffled())
+    for (i in values.indices) {
+        val card = Card(value = values[i], label = labels[i])
+        gameData.add(card)
+    }
+    gameData.shuffled()
 }
 
 @Composable
@@ -125,7 +145,7 @@ fun CardItem(
                 )
         ) {
             Text(
-                text = if (isSelected || card.removed || card.revealed) card.value else "?",
+                text = if (isSelected || card.removed || card.revealed) card.label else "?",
                 color = Color(0xFFE6E9ED),
                 fontSize = 24.sp,
                 fontWeight = FontWeight.Bold,
