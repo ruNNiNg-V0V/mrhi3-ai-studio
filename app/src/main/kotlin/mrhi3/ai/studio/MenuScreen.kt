@@ -38,15 +38,34 @@ data class MenuItem(
     val descriptionResId: Int
 )
 
+val menuItems = listOf(
+    MenuItem(
+        "MultiChoice",
+        R.string.menu_MultiChoice_title,
+        R.string.menu_MultiChoice_description
+    ),
+    MenuItem(
+        "WordScramble",
+        R.string.menu_WordScramble_title,
+        R.string.menu_WordScramble_description
+    ),
+    MenuItem(
+        "Combination",
+        R.string.menu_Combination_title,
+        R.string.menu_Combination_description
+    ),
+    MenuItem(
+        "MatchingCards",
+        R.string.menu_MatchingCards_title,
+        R.string.menu_MatchingCards_description
+    )
+)
+
 @Composable
 fun MenuScreen(
     onItemClicked: (String) -> Unit = { }
 ) {
-    val menuItems = listOf(
-        MenuItem("summarize", R.string.menu_summarize_title, R.string.menu_summarize_description),
-        MenuItem("photo_reasoning", R.string.menu_reason_title, R.string.menu_reason_description),
-        MenuItem("chat", R.string.menu_chat_title, R.string.menu_chat_description)
-    )
+
     LazyColumn(
         Modifier
             .padding(top = 16.dp, bottom = 16.dp)

@@ -33,14 +33,13 @@ val GenerativeViewModelFactory = object : ViewModelProvider.Factory {
         val config = generationConfig {
             temperature = 0.7f
         }
-
         return with(modelClass) {
             when {
                 isAssignableFrom(SummarizeViewModel::class.java) -> {
                     // Initialize a GenerativeModel with the `gemini-flash` AI model
                     // for text generation
                     val generativeModel = GenerativeModel(
-                        modelName = "gemini-1.5-flash-latest",
+                        modelName = "gemini-2.0-flash-lite",
                         apiKey = BuildConfig.apiKey,
                         generationConfig = config
                     )
@@ -51,7 +50,7 @@ val GenerativeViewModelFactory = object : ViewModelProvider.Factory {
                     // Initialize a GenerativeModel with the `gemini-flash` AI model
                     // for multimodal text generation
                     val generativeModel = GenerativeModel(
-                        modelName = "gemini-1.5-flash-latest",
+                        modelName = "gemini-2.0-flash-lite",
                         apiKey = BuildConfig.apiKey,
                         generationConfig = config
                     )
@@ -61,7 +60,7 @@ val GenerativeViewModelFactory = object : ViewModelProvider.Factory {
                 isAssignableFrom(ChatViewModel::class.java) -> {
                     // Initialize a GenerativeModel with the `gemini-flash` AI model for chat
                     val generativeModel = GenerativeModel(
-                        modelName = "gemini-1.5-flash-latest",
+                        modelName = "gemini-2.0-flash-lite",
                         apiKey = BuildConfig.apiKey,
                         generationConfig = config
                     )

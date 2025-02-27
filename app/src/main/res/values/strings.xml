@@ -46,9 +46,20 @@
     <string name="arrowBack">뒤로가기</string>
     <string name="firebase">파이어베이스</string>
 
-    <!-- Game Categories -->
+    <!-- Game categories -->
     <string name="MultiChoice">MultiChoice</string>
     <string name="WordScramble">WordScramble</string>
     <string name="Combination">Combination</string>
     <string name="MatchingCards">MatchingCards</string>
+
+    <!-- Game title & desc -->
+    <string name="menu_MultiChoice_title">수도 고르기</string>
+    <string name="menu_MultiChoice_description">4선1택 문제 맞추기</string>
+    <string name="menu_WordScramble_title">영단어 맞추기</string>
+    <string name="menu_WordScramble_description">뒤섞인 영단어 순서 맞추기</string>
+    <string name="menu_Combination_title">조합 맞추기</string>
+    <string name="menu_Combination_description">3선1택 문제 맞추기</string>
+    <string name="menu_MatchingCards_title">짝 맞추기</string>
+    <string name="menu_MatchingCards_description">지역별 특산물 맞추기</string>
+
 </resources>

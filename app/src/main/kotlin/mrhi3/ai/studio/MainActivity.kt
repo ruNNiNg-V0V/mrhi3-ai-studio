@@ -17,6 +17,7 @@
 package mrhi3.ai.studio
 
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.Column
@@ -62,15 +63,11 @@ class MainActivity : ComponentActivity() {
                                     navController.navigate(routeId)
                                 })
                             }
-                            // 개별 routeId를 갖는 뷰
-                            composable("summarize") {
-                                SummarizeRoute()
-                            }
-                            composable("photo_reasoning") {
-                                PhotoReasoningRoute()
-                            }
-                            composable("chat") {
-                                ChatRoute()
+                            menuItems.forEach {
+                                val category = it.routeId
+                                composable(category) {
+                                    GetGameScreen(category)
+                                }
                             }
                         }
                     }
