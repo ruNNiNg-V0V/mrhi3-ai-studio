@@ -58,15 +58,13 @@ class MainActivity : ComponentActivity() {
                                 navController.navigate(routeId)
                             })
                         }
-                        // 개별의 routeId를 갖는 뷰
-                        composable("summarize") {
-                            SummarizeRoute()
-                        }
-                        composable("photo_reasoning") {
-                            PhotoReasoningRoute()
-                        }
+
                         composable("chat") {
-                            MultiChoiceRoute()
+                            BaseGameScreen(
+                                title = "수도 맞추기",
+                                onBackPressed = { navController.popBackStack() },
+                                onNewGameClick = { /*TODO*/ }) {
+                            }
                         }
                     }
                 }

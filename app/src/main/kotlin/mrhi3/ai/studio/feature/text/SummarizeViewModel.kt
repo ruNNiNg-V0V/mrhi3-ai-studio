@@ -51,22 +51,25 @@ class SummarizeViewModel(
         }
     }
 
-    fun getMultiChoiceSource():String{
+    fun getMultiChoiceSource(){
         _uiState.value = SummarizeUiState.Loading
         // ai에 요청할 명령
         val prompt = """
             1. 무작위로 나라를 하나 선정
             2. 선정된 나라를 수도를 포함하여 각기 다른 나라의 수도를 넷 선정
-            3. 답변 예시 {
-                country : "대한민국",
-                options : ["평양","파리","도쿄","서울"]
-            }
+            3. 답변 예시 :
+            ``` json
+                {
+                    country : "대한민국",
+                    options : ["평양","파리","도쿄","서울"]
+                }
+            ```
             4. 답변은 json만
         """.trimIndent()
-        var outputContent = ""
         viewModelScope.launch {
             try {
                 // 명령 실행
+                var outputContent = ""
                 generativeModel.generateContentStream(prompt)
                     .collect { response ->
                         // 요청 성공
@@ -78,13 +81,20 @@ class SummarizeViewModel(
                 _uiState.value = SummarizeUiState.Error(e.localizedMessage ?: "")
             }
         }
-        return outputContent
     }
 
     fun summarizeStreaming(inputText: String) {
         _uiState.value = SummarizeUiState.Loading
         // ai에 요청할 명령
-        val prompt = ""
+        val prompt = """
+            1. 무작위로 나라를 하나 선정
+            2. 선정된 나라를 수도를 포함하여 각기 다른 나라의 수도를 넷 선정
+            3. 답변 예시 {
+                country : "대한민국",
+                options : ["평양","파리","도쿄","서울"]
+            }
+            4. 답변은 json만
+        """.trimIndent()
 
         viewModelScope.launch {
             try {
