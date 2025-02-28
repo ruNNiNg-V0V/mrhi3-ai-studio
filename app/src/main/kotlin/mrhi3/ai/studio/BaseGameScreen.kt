@@ -29,6 +29,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import mrhi3.ai.studio.feature.combination.CombinationGame
 import mrhi3.ai.studio.multiChoice.MultiChoiceGame
 
 @Composable
@@ -45,7 +46,7 @@ fun GetGameSource(category: String) {
         }
 
         context.getString(R.string.Combination) -> {
-            Log.d("Combination", "Combination")
+            CombinationGame()
         }
 
         context.getString(R.string.MatchingCards) -> {

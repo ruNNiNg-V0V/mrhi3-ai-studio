@@ -14,7 +14,7 @@ class CombinationViewModel(
     private val Combination = generativeModel.startChat( // `Combination` 초기화
     )
 
-    suspend fun sendMessage(userMessage: String): DataCombinationGame? {
+/*    suspend fun sendMessage(userMessage: String): DataCombinationGame? {
         return withContext(Dispatchers.IO) {
             var sD: DataCombinationGame? = null
             try {
@@ -36,5 +36,5 @@ class CombinationViewModel(
             }
             sD
         }
-    }
+    }*/
 }

@@ -63,7 +63,7 @@ import mrhi3.ai.studio.R
 import mrhi3.ai.studio.feature.combination.CombinationViewModel
 
 
-@Composable
+/*@Composable
 internal fun CombinationRoute(
     combinationViewModel: CombinationViewModel = viewModel(factory = GenerativeViewModelFactory)
 ) {
@@ -94,7 +94,7 @@ internal fun CombinationRoute(
             CombinationList(combinationUiState.messages, listState)
         }
     }
-}
+}*/
 
 @Composable
 fun CombinationList(

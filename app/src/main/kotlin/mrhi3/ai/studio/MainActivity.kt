@@ -17,7 +17,6 @@
 package mrhi3.ai.studio
 
 import android.os.Bundle
-import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.Column
@@ -30,9 +29,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import mrhi3.ai.studio.feature.chat.ChatRoute
-import mrhi3.ai.studio.feature.multimodal.PhotoReasoningRoute
-import mrhi3.ai.studio.feature.text.SummarizeRoute
 import mrhi3.ai.studio.ui.theme.GenerativeAISample
 import mrhi3.ai.studio.ui.theme.setTopAppBar
 
@@ -71,12 +67,6 @@ class MainActivity : ComponentActivity() {
                                 }
                             }
                         }
-                        composable("combination") {
-                            BaseGameScreen(title = "단어 조합 게임",
-                                onBackPressed = { },
-                                onNewGameClick = { },
-                                onSaveClick = { })
-                        }
                     }
                 }
             }
@@ -108,21 +98,11 @@ fun SimpleComposablePreview() {
                             navController.navigate(routeId)
                         })
                     }
-                    // 개별 routeId를 갖는 뷰
-                    composable("summarize") {
-                        SummarizeRoute()
-                    }
-                    composable("photo_reasoning") {
-                        PhotoReasoningRoute()
-                    }
-                    composable("chat") {
-                        ChatRoute()
-                    }
-                    composable("combination") {
-                        BaseGameScreen(title = "단어 조합 게임",
-                            onBackPressed = { },
-                            onNewGameClick = { },
-                            onSaveClick = { })
+                    menuItems.forEach {
+                        val category = it.routeId
+                        composable(category) {
+                            BaseGameScreen(category,{},{},{})
+                        }
                     }
                 }
             }
