@@ -66,7 +66,7 @@ class MainActivity : ComponentActivity() {
                             menuItems.forEach {
                                 val category = it.routeId
                                 composable(category) {
-                                    GetGameScreen(category)
+                                    BaseGameScreen(category,{},{},{})
                                 }
                             }
                         }

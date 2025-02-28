@@ -62,7 +62,7 @@ fun checkAnswer(context: Context,selectedAnswer: String) {
 }
 
 @Composable
-fun QuizGame() {
+fun MultiChoiceGame() {
     val question  = CountryOptions().q
     val options = CountryOptions().choices
     var selectedAnswer by remember { mutableStateOf<String?>(null) }

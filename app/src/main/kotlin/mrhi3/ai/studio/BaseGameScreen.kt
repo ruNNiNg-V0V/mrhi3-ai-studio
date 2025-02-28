@@ -1,4 +1,5 @@
 package mrhi3.ai.studio
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -22,15 +23,43 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import mrhi3.ai.studio.multiChoice.QuizGame
+import mrhi3.ai.studio.multiChoice.MultiChoiceGame
+
+@Composable
+fun GetGameSource(category: String) {
+    val context = LocalContext.current
+    when (category) {
+        // 게임 카테고리에 맞게 게임 화면 출력
+        context.getString(R.string.MultiChoice) -> {
+            MultiChoiceGame()
+        }
+
+        context.getString(R.string.WordScramble) -> {
+            Log.d("WordScramble", "WordScramble")
+        }
+
+        context.getString(R.string.Combination) -> {
+            Log.d("Combination", "Combination")
+        }
+
+        context.getString(R.string.MatchingCards) -> {
+            Log.d("MatchingCards", "MatchingCards")
+        }
+
+        else -> {
+            Log.d("else","등록되지 않은 게임입니다.")
+        }
+    }
+}
 
 @Composable
 fun BaseGameScreen(
-    title: String,
+    category: String,
     onBackPressed: () -> Unit,
     onNewGameClick: () -> Unit,
     onSaveClick: () -> Unit
@@ -64,7 +93,7 @@ fun BaseGameScreen(
             }
 
             Text(
-                text = title.uppercase(),
+                text = category.uppercase(),
                 color = Color.White,
                 fontSize = 24.sp,
                 fontWeight = FontWeight.Bold,
@@ -89,7 +118,7 @@ fun BaseGameScreen(
 
         ) {
             // Game content Area
-            QuizGame()
+            GetGameSource(category)
         }
 
         // Button Row
