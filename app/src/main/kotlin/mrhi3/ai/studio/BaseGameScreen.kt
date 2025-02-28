@@ -1,4 +1,5 @@
 package mrhi3.ai.studio
+import MatchingGame
 import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -48,7 +49,7 @@ fun GetGameSource(category: String) {
         }
 
         context.getString(R.string.MatchingCards) -> {
-            Log.d("MatchingCards", "MatchingCards")
+            MatchingGame()
         }
 
         else -> {
