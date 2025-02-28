@@ -111,7 +111,7 @@ fun BaseGameScreen(
             modifier = Modifier
                 .weight(1f)
                 .fillMaxWidth()
-                .padding(top = 16.dp, bottom = 16.dp)
+                .padding(top = 16.dp, bottom = 8.dp)
                 .background(
                     color = Color(0xFFFFFF),
                     shape = RoundedCornerShape(8.dp)
@@ -126,7 +126,7 @@ fun BaseGameScreen(
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(top = 16.dp, bottom = 16.dp),
+                .padding(top = 8.dp, bottom = 16.dp),
             horizontalArrangement = Arrangement.SpaceBetween  // 두 버튼 간의 공간을 동일하게
         ) {
             Box(
