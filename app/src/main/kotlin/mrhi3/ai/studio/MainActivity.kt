@@ -36,6 +36,7 @@ import mrhi3.ai.studio.feature.text.SummarizeRoute
 import mrhi3.ai.studio.ui.theme.GenerativeAISample
 import mrhi3.ai.studio.ui.theme.setTopAppBar
 
+
 class MainActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -69,6 +70,12 @@ class MainActivity : ComponentActivity() {
                                     BaseGameScreen(category,{},{},{})
                                 }
                             }
+                        }
+                        composable("combination") {
+                            BaseGameScreen(title = "단어 조합 게임",
+                                onBackPressed = { },
+                                onNewGameClick = { },
+                                onSaveClick = { })
                         }
                     }
                 }
@@ -110,6 +117,12 @@ fun SimpleComposablePreview() {
                     }
                     composable("chat") {
                         ChatRoute()
+                    }
+                    composable("combination") {
+                        BaseGameScreen(title = "단어 조합 게임",
+                            onBackPressed = { },
+                            onNewGameClick = { },
+                            onSaveClick = { })
                     }
                 }
             }
