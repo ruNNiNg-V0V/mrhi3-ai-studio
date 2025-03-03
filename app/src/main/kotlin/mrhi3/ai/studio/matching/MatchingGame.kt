@@ -1,12 +1,26 @@
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -14,6 +28,11 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
+import mrhi3.ai.studio.GenerativeViewModelFactory
+import mrhi3.ai.studio.feature.text.SummarizeUiState
+import mrhi3.ai.studio.feature.text.SummarizeViewModel
+import mrhi3.ai.studio.firebase.showLoading
 
 data class Card(
     val value: String, // 얘는 키 값
@@ -24,7 +43,9 @@ data class Card(
 )
 
 @Composable
-fun MatchingGame() {
+fun MatchingGame(
+
+) {
     val gameData = remember { mutableStateListOf<Card>() }
     val firstCard = remember { mutableStateOf<Card?>(null) }
 
@@ -40,7 +61,6 @@ fun MatchingGame() {
     // 게임 화면 구현
     MatchingGameUI(
         gameDataLeft = gameData,
-        //gameDataRight = gameDataRight,
         firstCard = firstCard,
         setFirstCard = ::setFirstCard
     )
@@ -48,6 +68,41 @@ fun MatchingGame() {
     if (gameData.all { it.removed }) {
         Text("Game Cleared!")
     }
+
+    // AI로 게임 소스 불러오기
+    // 사용할 모델 선언
+    val prompt: SummarizeViewModel = viewModel(factory = GenerativeViewModelFactory)
+    // 모델의 상태 값의 변수
+    val summarizeUiState by prompt.uiState.collectAsState()
+
+    // 명령을 마친 후 작업을 관리할 변수
+    var isLoading by remember { mutableStateOf(true) }
+
+    // 작업 시작
+    val job = remember { prompt.summarizeStreaming() }
+
+    // 완료 확인
+    LaunchedEffect(job) {
+        job.join() // 작업이 완료될 때까지 기다림
+        isLoading = !job.isCompleted
+    }
+
+    if (isLoading) {
+        showLoading(isLoading)
+    } else {
+        val result = prompt.getResult()
+        when (summarizeUiState) {
+            is SummarizeUiState.Success -> {
+                Log.d("result", result)
+            }
+
+            else -> {
+
+            }
+        }
+    }
+
+
 }
 
 fun initializeGameData(gameData: MutableList<Card>) {
