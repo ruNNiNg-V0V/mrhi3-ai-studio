@@ -27,20 +27,22 @@ class SummarizeViewModel(
 
         // ai에 요청할 명령
         val prompt = """
-            1. 중복되지 않는 대한민국의 특산물 6 개를 선정한다
-            2. 특산물에는 지역명이 들어가지 않는다.
-            3. 지역명은 시, 군, 구 중 하나에 해당해야한다. 
-            4. 선정된 특산물의 지역명을 가져온다. 
-            5. 6짝의 데이터를 A~G의 json으로 만들어서 출력한다 
-            6. 답변 예시 {
-                A : ["원주시","감자"],
-                B : ["제주시","감귤"],
-                C : ["영광군","굴비"],
-                D : ["나주시","배"],
-                E : ["가평시","잣"],
-                F : ["신안군","천일렴"]
+            1. 주제를 "한국 전통 문화"로 설정합니다.
+2. 악기, 의복, 음식, 놀이 하위 카테고리 중 하나를 무작위로 선택하세요.
+3. 하위 카테고리에 관련된 완성품 단어를 p에 저장하세요.
+4. ps1(구성요소), ps2(구성요소)는 p를 구성하는 서로 다른 두 개의 요소. (예 사물놀이 -> 북, 꽹과리)
+5. 질문(q)에는 'ps1 + ? = p' 형태로 저장하세요.
+6. 키워드(k)에는 ps2 값을 저장하세요.
+7. 선택지(choices)에는 k의 값을 포함한 세 개의 항목을 포함하며 나머지 두 값은 p와 전혀 관련이 없는 단어여야 합니다.
+8. 선택지(choices)에 들어있는 값들을 무작위로 배열해야 합니다.
+9. 힌트(h)에는 ps2의 값의 세 가지 간단한 특징을 포함하여 10자 이내로 작성해야 합니다.
+10. 답변 예시 {
+              "q": "붓 + ? -> 서예",
+              "k": "먹",
+              "choices": ["고추장", "책상", "먹"],
+              "hints": ["검은색", "갈아서 사용", "글씨 쓰기"]
             }
-            7. 답변은 json만
+11. 답변은 질문(q), 키워드(k), 선택지(choices), 힌트(hints)를 포함해서 json만 보내세요.
         """.trimIndent()
 
         val job = viewModelScope.launch {
@@ -48,7 +50,10 @@ class SummarizeViewModel(
             try {
                 generativeModel.generateContentStream(prompt)
                     .collect { response ->
-                        outputContent += response.text
+                        val responseText = response.text
+                        val cutJson = responseText.toString().replace("json", "")
+                        val cutResult = cutJson.replace("```", "")
+                        outputContent += cutResult
                         _uiState.value = SummarizeUiState.Success(outputContent)
                     }
             } catch (e: Exception) {

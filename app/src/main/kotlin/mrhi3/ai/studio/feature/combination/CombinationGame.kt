@@ -14,13 +14,13 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.ButtonColors
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -33,12 +33,62 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.google.gson.Gson
+import mrhi3.ai.studio.GenerativeViewModelFactory
+import mrhi3.ai.studio.feature.text.SummarizeUiState
+import mrhi3.ai.studio.feature.text.SummarizeViewModel
+import mrhi3.ai.studio.firebase.showLoading
+
+data class CombinationData (
+    val q: String,
+    val k: String,
+    val choices: List<String>,
+    val hints: List<String>
+)
+
+fun BasicSource() : CombinationData {
+    val data = CombinationData(
+        q = "윷 + ? -> 윷놀이",
+        k = "말",
+        choices = listOf("의자", "연필", "말"),
+        hints = listOf("4개 존재", "놀이 도구", "움직임")
+    )
+    return data
+}
 
 @Composable
 fun CombinationGame() {
-
     var buttonColors by remember { mutableStateOf(listOf(Color(0xFF80CBC4), Color(0xFF80CBC4), Color(0xFF80CBC4))) }
     var combinationData by remember { mutableStateOf(BasicSource()) }
+
+    val prompt: SummarizeViewModel = viewModel(factory = GenerativeViewModelFactory)
+    val summarizeUiState by prompt.uiState.collectAsState()
+
+    var isLoading by remember { mutableStateOf(true) }
+
+    val job = remember { prompt.summarizeStreaming() }
+    LaunchedEffect(job) {
+        job.join()
+        isLoading = !job.isCompleted
+    }
+
+    if (isLoading) {
+        showLoading(isLoading)
+    } else {
+        val result = prompt.getResult()
+        when (summarizeUiState) {
+            is SummarizeUiState.Success -> {
+                val GsonData = Gson().fromJson(result, CombinationData::class.java)
+                combinationData = GsonData
+                Log.d("gsonData", combinationData.toString())
+
+            }
+            else -> {
+                Log.d("SummarizeUiState", "error")
+            }
+        }
+    }
 
     fun onChoiceClicks(index: Int, choice: String, k: String) {
         if (choice == k) {
