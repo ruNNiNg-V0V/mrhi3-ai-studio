@@ -53,6 +53,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import mrhi3.ai.studio.firebase.Source
 import mrhi3.ai.studio.firebase.getData
+import mrhi3.ai.studio.multiChoice.MultiChoiceGame
 
 @Composable
 fun readData() {
@@ -78,6 +79,19 @@ fun sourceScreen(sources: List<Source>) {
     // 초기 필터 상태
     if (filteredSources.isEmpty()) {
         filteredSources = sources
+    }
+
+    var gameData by remember { mutableStateOf<GameData?>(null) }
+    if (gameData != null) {
+        when (gameData) {
+            is GameData.MultiChoiceData -> {
+                MultiChoiceGame(gameData as GameData.MultiChoiceData)
+            }
+
+            else -> {
+
+            }
+        }
     }
 
     Row(
@@ -156,21 +170,41 @@ fun sourceScreen(sources: List<Source>) {
                         style = MaterialTheme.typography.titleMedium
                     )
                     Text(
-                        text = source.content,
-                        style = MaterialTheme.typography.titleMedium
-                    )
-                    Text(
-                        text = source.date,
+                        text = source.choices.toString(),
                         style = MaterialTheme.typography.bodyMedium,
                         modifier = Modifier.padding(top = 8.dp)
                     )
                     TextButton(
                         onClick = {
-                            //
+                            when (source.cate) {
+                                "MultiChoice" -> {
+                                    gameData = GameData.MultiChoiceData(
+                                        source.q,
+                                        source.k,
+                                        source.choices
+                                    )
+                                }
+
+                                "WordScramble" -> {
+
+                                }
+
+                                "Combination" -> {
+
+                                }
+
+                                "MatchingCards" -> {
+
+                                }
+
+                                else -> {
+
+                                }
+                            }
                         },
                         modifier = Modifier.align(Alignment.End)
                     ) {
-                        Text(text = source.email)
+                        Text(text = stringResource(R.string.action_try))
                     }
                 }
             }

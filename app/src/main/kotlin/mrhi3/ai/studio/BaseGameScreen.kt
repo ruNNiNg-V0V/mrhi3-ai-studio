@@ -2,6 +2,7 @@ package mrhi3.ai.studio
 
 import Card
 import MatchingGame
+import android.content.Context
 import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -41,6 +42,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import mrhi3.ai.studio.feature.combination.CombinationGame
 import mrhi3.ai.studio.feature.text.SummarizeUiState
 import mrhi3.ai.studio.feature.text.SummarizeViewModel
+import mrhi3.ai.studio.firebase.saveData
 import mrhi3.ai.studio.firebase.showLoading
 import mrhi3.ai.studio.multiChoice.MultiChoiceGame
 import shuffledCards
@@ -59,35 +61,7 @@ sealed class GameData {
 
 
 @Composable
-fun GetGameSource(category: String) {
-    val context = LocalContext.current
-
-    var gameData by remember { mutableStateOf<GameData?>(null) }
-
-    when (category) {
-        // 게임 카테고리에 맞게 게임 화면 출력
-        context.getString(R.string.MultiChoice) -> {
-            gameData = GameData.MultiChoiceData()
-            MultiChoiceGame(gameData as GameData.MultiChoiceData)
-        }
-
-        context.getString(R.string.MatchingCards) -> {
-            gameData = GameData.CardMatchingData()
-            MatchingGame(gameData as GameData.CardMatchingData)
-        }
-
-        context.getString(R.string.WordScramble) -> {
-            Log.d("WordScramble", "WordScramble")
-        }
-
-        context.getString(R.string.Combination) -> {
-            CombinationGame()
-        }
-
-        else -> {
-            Log.d("else", "등록되지 않은 게임입니다.")
-        }
-    }
+fun GetGameSource(context:Context) {
 
     // AI로 게임 소스 불러오기
     // 사용할 모델 선언
@@ -132,9 +106,20 @@ fun GetGameSource(category: String) {
 fun BaseGameScreen(
     category: String,
     onBackPressed: () -> Unit,
-    onNewGameClick: () -> Unit,
-    onSaveClick: () -> Unit
 ) {
+
+    var gameData by remember { mutableStateOf<GameData?>(null) }
+
+    var haveToNewGame by remember {mutableStateOf(false)}
+
+    var haveToSave by remember {mutableStateOf(false)}
+    
+    if (haveToSave){
+        saveData(context = LocalContext.current, gameData)
+        haveToSave = false
+    }
+    
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -189,7 +174,35 @@ fun BaseGameScreen(
 
         ) {
             // Game content Area
-            GetGameSource(category)
+
+            val context = LocalContext.current
+
+            when (category) {
+                // 게임 카테고리에 맞게 게임 화면 출력
+                context.getString(R.string.MultiChoice) -> {
+                    gameData = GameData.MultiChoiceData()
+                    MultiChoiceGame(gameData as GameData.MultiChoiceData)
+                }
+
+                context.getString(R.string.MatchingCards) -> {
+                    gameData = GameData.CardMatchingData()
+                    MatchingGame(gameData as GameData.CardMatchingData)
+                }
+
+                context.getString(R.string.WordScramble) -> {
+                    Log.d("WordScramble", "WordScramble")
+                }
+
+                context.getString(R.string.Combination) -> {
+                    CombinationGame()
+                }
+
+                else -> {
+                    Log.d("else", "등록되지 않은 게임입니다.")
+                }
+            }
+
+            GetGameSource(context)
         }
 
         // Button Row
@@ -205,7 +218,7 @@ fun BaseGameScreen(
                 contentAlignment = Alignment.Center  // 중앙 정렬
             ) {
                 Button(
-                    onClick = onNewGameClick,
+                    onClick = {haveToNewGame = true},
                     modifier = Modifier
                         .width(180.dp)
                         .height(48.dp),
@@ -224,7 +237,7 @@ fun BaseGameScreen(
                 contentAlignment = Alignment.Center
             ) {
                 Button(
-                    onClick = onSaveClick,
+                    onClick = {haveToSave = true},
                     modifier = Modifier
                         .width(180.dp)
                         .height(48.dp),

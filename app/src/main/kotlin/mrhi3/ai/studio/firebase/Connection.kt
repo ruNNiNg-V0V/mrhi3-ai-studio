@@ -21,6 +21,7 @@ import kotlinx.coroutines.tasks.await
 import mrhi3.ai.studio.GameListActivity
 import mrhi3.ai.studio.R
 import com.google.gson.Gson
+import mrhi3.ai.studio.GameData
 import java.util.Date
 
 @Composable
@@ -58,9 +59,10 @@ fun signIn(context: Context) {
 // 파이어베이스 불러오기 예시 데이터 클래스
 data class Source(
     val id: String,
-    val content: String,
-    val date: String,
-    val email: String
+    val cate: String,
+    val q: String,
+    val k: String,
+    val choices: List<String>
 )
 
 val gson = Gson()
@@ -79,17 +81,18 @@ fun getData(): List<Source> {
     LaunchedEffect(Unit) {
         try {
             // documents가 초기화 될 때 까지 로딩 나타내기
-            val documents = db.collection("news").get().await()
+            val documents = db.collection("games").get().await()
             val sources = documents.map { document ->
                 val id = document.id // document가 json으로 변경되면서 id는 빠짐
                 val json = gson.toJson(document.data) // 받아온 데이터를 json으로 변환
                 val data = gson.fromJson(json, Source::class.java) // json을 Source로 변환
                 // document를 Source로 변환
                 Source(
-                    id = id,
-                    content = data.content,
-                    date = data.date,
-                    email = data.email
+                    id = data.id,
+                    cate = data.cate,
+                    q = data.q,
+                    k = data.k,
+                    choices = data.choices
                 )
             }
             if (sources.isNotEmpty()) {
@@ -105,7 +108,7 @@ fun getData(): List<Source> {
 }
 
 @Composable
-fun saveData(context: Context) {
+fun saveData(context: Context, gameData: GameData?) {
 
     // 응답을 기다리는 동안 로딩 표시
     var isLoading by remember { mutableStateOf(true) }
@@ -120,15 +123,28 @@ fun saveData(context: Context) {
      *  getData()에서 불러 올 데이터 new -> games 수정할 것
      */
 
-    val data = Source(
-        id = "selection4",
-        content = "머시깽이",
-        date = "20250224",
-        email = "william.h.taft@my-own-personal-domain.com"
-    )
+    var source: Source
+
+    when (gameData) {
+        is GameData.MultiChoiceData -> {
+            source = Source(
+                id = gameData.q+"의 수도는",
+                cate = "MultiChoice",
+                q = gameData.q,
+                k = gameData.k,
+                choices = gameData.choices
+            )
+        }
+
+        is GameData.CardMatchingData -> TODO()
+        null -> {
+            // 저장할 수 없는 경우
+            return
+        }
+    }
 
     db.collection("games")
-        .add(data)
+        .add(source)
         .addOnSuccessListener {
             isLoading = false
             Toast.makeText(context, "게임 데이터 저장 성공!!", Toast.LENGTH_SHORT).show()
