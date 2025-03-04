@@ -1,7 +1,6 @@
 package mrhi3.ai.studio.multiChoice
 
 import android.content.Context
-import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -17,8 +16,6 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -31,17 +28,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.viewmodel.compose.viewModel
-import mrhi3.ai.studio.GenerativeViewModelFactory
-import mrhi3.ai.studio.feature.text.SummarizeUiState
-import mrhi3.ai.studio.feature.text.SummarizeViewModel
-import mrhi3.ai.studio.firebase.showLoading
-
-data class CountryOptions(
-    val q: String = "대한민국",
-    val k: String = "서울",
-    val choices: List<String> = listOf("평양", "파리", "도쿄", "서울")
-)
+import mrhi3.ai.studio.GameData
 
 @Composable
 fun getColorForOption(option: String, options: List<String>): Color {
@@ -61,7 +48,7 @@ fun getColorForOption(option: String, options: List<String>): Color {
 }
 
 fun checkAnswer(context: Context,selectedAnswer: String) {
-    val correctAnswer = CountryOptions().k
+    val correctAnswer = GameData.MultiChoiceData().k
     if (selectedAnswer == correctAnswer) {
         Toast.makeText(context, "정답입니다!", Toast.LENGTH_SHORT).show()
     } else {
@@ -70,48 +57,9 @@ fun checkAnswer(context: Context,selectedAnswer: String) {
 }
 
 @Composable
-fun MultiChoiceGame() {
-    var gameData by remember { mutableStateOf(CountryOptions()) }
+fun MultiChoiceGame(gameData: GameData.MultiChoiceData) {
     var selectedAnswer by remember { mutableStateOf<String?>(null) }
     val context = LocalContext.current
-
-    // AI로 게임 소스 불러오기
-    // 사용할 모델 선언
-    val prompt: SummarizeViewModel = viewModel(factory = GenerativeViewModelFactory)
-    // 모델의 상태 값의 변수
-    val summarizeUiState by prompt.uiState.collectAsState()
-
-    // 명령을 마친 후 작업을 관리할 변수
-    var isLoading by remember { mutableStateOf(true) }
-
-    // 작업 시작
-    val job = remember { prompt.summarizeStreaming(context,"MultiChoice") }
-
-    // 완료 확인
-    LaunchedEffect(job) {
-        job.join() // 작업이 완료될 때까지 기다림
-        isLoading = !job.isCompleted
-    }
-
-    if (isLoading) {
-        showLoading(isLoading)
-    } else {
-        val result = prompt.getResult()
-        when (summarizeUiState) {
-            is SummarizeUiState.Success -> {
-                Log.d("result", result)
-                /**
-                 * TODO
-                 * 문자열을 gameData로 사용할 수 있게 전처리 후 Gson 적용
-                 */
-            }
-
-            else -> {
-
-            }
-        }
-    }
-
 
     Column(
         modifier = Modifier

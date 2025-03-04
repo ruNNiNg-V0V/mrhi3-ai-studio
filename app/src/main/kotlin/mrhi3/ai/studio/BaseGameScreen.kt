@@ -1,4 +1,6 @@
 package mrhi3.ai.studio
+
+import Card
 import MatchingGame
 import android.util.Log
 import androidx.compose.foundation.background
@@ -21,6 +23,12 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -29,16 +37,43 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import mrhi3.ai.studio.feature.combination.CombinationGame
+import mrhi3.ai.studio.feature.text.SummarizeUiState
+import mrhi3.ai.studio.feature.text.SummarizeViewModel
+import mrhi3.ai.studio.firebase.showLoading
 import mrhi3.ai.studio.multiChoice.MultiChoiceGame
+import shuffledCards
+
+sealed class GameData {
+    data class MultiChoiceData(
+        val q: String = "대한민국",
+        val k: String = "서울",
+        val choices: List<String> = listOf("평양", "파리", "도쿄", "서울")
+    ) : GameData()
+
+    data class CardMatchingData(
+        val cards: List<Card> = shuffledCards()
+    ) : GameData()
+}
+
 
 @Composable
 fun GetGameSource(category: String) {
     val context = LocalContext.current
+
+    var gameData by remember { mutableStateOf<GameData?>(null) }
+
     when (category) {
         // 게임 카테고리에 맞게 게임 화면 출력
         context.getString(R.string.MultiChoice) -> {
-            MultiChoiceGame()
+            gameData = GameData.MultiChoiceData()
+            MultiChoiceGame(gameData as GameData.MultiChoiceData)
+        }
+
+        context.getString(R.string.MatchingCards) -> {
+            gameData = GameData.CardMatchingData()
+            MatchingGame(gameData as GameData.CardMatchingData)
         }
 
         context.getString(R.string.WordScramble) -> {
@@ -49,14 +84,48 @@ fun GetGameSource(category: String) {
             CombinationGame()
         }
 
-        context.getString(R.string.MatchingCards) -> {
-            MatchingGame()
-        }
-
         else -> {
-            Log.d("else","등록되지 않은 게임입니다.")
+            Log.d("else", "등록되지 않은 게임입니다.")
         }
     }
+
+    // AI로 게임 소스 불러오기
+    // 사용할 모델 선언
+    val prompt: SummarizeViewModel = viewModel(factory = GenerativeViewModelFactory)
+    // 모델의 상태 값의 변수
+    val summarizeUiState by prompt.uiState.collectAsState()
+
+    // 명령을 마친 후 작업을 관리할 변수
+    var isLoading by remember { mutableStateOf(true) }
+
+    // 작업 시작
+    val job = remember { prompt.summarizeStreaming(context, "MultiChoice") }
+
+    // 완료 확인
+    LaunchedEffect(job) {
+        job.join() // 작업이 완료될 때까지 기다림
+        isLoading = !job.isCompleted
+    }
+
+    if (isLoading) {
+        showLoading(isLoading)
+    } else {
+        val result = prompt.getResult()
+        when (summarizeUiState) {
+            is SummarizeUiState.Success -> {
+                Log.d("result", result)
+                /**
+                 * TODO
+                 * 문자열을 gameData로 사용할 수 있게 전처리 후 Gson 적용
+                 */
+            }
+
+            else -> {
+
+            }
+        }
+    }
+
 }
 
 @Composable
