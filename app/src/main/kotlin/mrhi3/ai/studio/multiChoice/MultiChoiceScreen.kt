@@ -32,15 +32,16 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.google.gson.Gson
 import mrhi3.ai.studio.GenerativeViewModelFactory
 import mrhi3.ai.studio.feature.text.SummarizeUiState
 import mrhi3.ai.studio.feature.text.SummarizeViewModel
 import mrhi3.ai.studio.firebase.showLoading
 
 data class CountryOptions(
-    val q: String = "대한민국",
-    val k: String = "서울",
-    val choices: List<String> = listOf("평양", "파리", "도쿄", "서울")
+    val q: String,
+    val k: String,
+    val choices: List<String>
 )
 
 @Composable
@@ -60,8 +61,7 @@ fun getColorForOption(option: String, options: List<String>): Color {
     }
 }
 
-fun checkAnswer(context: Context,selectedAnswer: String) {
-    val correctAnswer = CountryOptions().k
+fun checkAnswer(context: Context,selectedAnswer: String, correctAnswer : String) {
     if (selectedAnswer == correctAnswer) {
         Toast.makeText(context, "정답입니다!", Toast.LENGTH_SHORT).show()
     } else {
@@ -71,7 +71,7 @@ fun checkAnswer(context: Context,selectedAnswer: String) {
 
 @Composable
 fun MultiChoiceGame() {
-    var gameData by remember { mutableStateOf(CountryOptions()) }
+    var gameData by remember { mutableStateOf(CountryOptions("","", emptyList())) }
     var selectedAnswer by remember { mutableStateOf<String?>(null) }
     val context = LocalContext.current
 
@@ -104,16 +104,31 @@ fun MultiChoiceGame() {
                  * TODO
                  * 문자열을 gameData로 사용할 수 있게 전처리 후 Gson 적용
                  */
+                var cleanedJsonString = result.trim()
+
+                //불필요한 문자 제거
+                cleanedJsonString = cleanedJsonString
+                    .removePrefix("json")
+                    .removePrefix("```json")
+                    .removePrefix("```")
+                    .trim()
+
+                cleanedJsonString = cleanedJsonString.removeSuffix("```").trim()
+                Log.d("CleanedJson", cleanedJsonString)
+
+                val gson = Gson()
+                gameData = gson.fromJson(cleanedJsonString, CountryOptions::class.java)
+                Log.d("ParsedData", gameData.toString())
             }
 
             else -> {
-
+                Log.e("error", "Failed to load data.")
             }
         }
     }
 
 
-    Column(
+        Column(
         modifier = Modifier
             .fillMaxSize()
             .padding(16.dp),
@@ -150,7 +165,7 @@ fun MultiChoiceGame() {
                             Button(
                                 onClick = {
                                     selectedAnswer = option
-                                    checkAnswer(context,option)
+                                    checkAnswer(context,option,gameData.k)
                                 },
                                 colors = ButtonDefaults.buttonColors(containerColor = Color.Transparent),
                                 modifier = Modifier
