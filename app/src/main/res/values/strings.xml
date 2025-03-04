@@ -62,6 +62,17 @@
     <string name="menu_MatchingCards_title">짝 맞추기</string>
     <string name="menu_MatchingCards_description">지역별 특산물 맞추기</string>
 
+    <!-- MultiChoice sample strings -->
+    <string name="multi_choice_prompt">
+        1. 무작위로 나라를 하나 선정
+        2. 선정된 나라를 수도를 포함하여 각기 다른 나라의 수도를 넷 선정
+        3. 답변 예시 {
+            k : "대한민국",
+            choices : ["평양","파리","도쿄","서울"]
+        }
+        4. 답변은 json만
+    </string>
+
     <!-- Combination sample strings -->
     <string name="combination_label">Message</string>
     <string name="combination_send">Send</string>

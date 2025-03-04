@@ -69,40 +69,6 @@ fun MatchingGame(
         Text("Game Cleared!")
     }
 
-    // AI로 게임 소스 불러오기
-    // 사용할 모델 선언
-    val prompt: SummarizeViewModel = viewModel(factory = GenerativeViewModelFactory)
-    // 모델의 상태 값의 변수
-    val summarizeUiState by prompt.uiState.collectAsState()
-
-    // 명령을 마친 후 작업을 관리할 변수
-    var isLoading by remember { mutableStateOf(true) }
-
-    // 작업 시작
-    val job = remember { prompt.summarizeStreaming() }
-
-    // 완료 확인
-    LaunchedEffect(job) {
-        job.join() // 작업이 완료될 때까지 기다림
-        isLoading = !job.isCompleted
-    }
-
-    if (isLoading) {
-        showLoading(isLoading)
-    } else {
-        val result = prompt.getResult()
-        when (summarizeUiState) {
-            is SummarizeUiState.Success -> {
-                Log.d("result", result)
-            }
-
-            else -> {
-
-            }
-        }
-    }
-
-
 }
 
 fun initializeGameData(gameData: MutableList<Card>) {
