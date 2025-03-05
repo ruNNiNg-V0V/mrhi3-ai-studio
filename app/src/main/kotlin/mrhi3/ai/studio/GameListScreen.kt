@@ -87,7 +87,7 @@ fun sourceScreen(sources: List<Source>) {
     var isMultiChoice by remember { mutableStateOf(false) }
     if (isMultiChoice) {
         val gameSource = getSource()
-        MultiChoiceGame(
+        MultiChoiceGame("GameList",
             CountryOptions(
                 q = gameSource!!.q,
                 k = gameSource.k,

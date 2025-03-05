@@ -33,33 +33,6 @@ import mrhi3.ai.studio.feature.combination.CombinationGame
 import mrhi3.ai.studio.multiChoice.MultiChoiceGame
 
 @Composable
-fun GetGameSource(category: String) {
-    val context = LocalContext.current
-    when (category) {
-        // 게임 카테고리에 맞게 게임 화면 출력
-        context.getString(R.string.MultiChoice) -> {
-            MultiChoiceGame()
-        }
-
-        context.getString(R.string.WordScramble) -> {
-            Log.d("WordScramble", "WordScramble")
-        }
-
-        context.getString(R.string.Combination) -> {
-            CombinationGame()
-        }
-
-        context.getString(R.string.MatchingCards) -> {
-            MatchingGame()
-        }
-
-        else -> {
-            Log.d("else","등록되지 않은 게임입니다.")
-        }
-    }
-}
-
-@Composable
 fun BaseGameScreen(
     category: String,
     onBackPressed: () -> Unit,
@@ -120,7 +93,7 @@ fun BaseGameScreen(
 
         ) {
             // Game content Area
-            GetGameSource(category)
+
         }
 
         // Button Row

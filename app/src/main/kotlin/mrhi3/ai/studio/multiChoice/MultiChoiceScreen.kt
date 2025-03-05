@@ -1,8 +1,10 @@
 package mrhi3.ai.studio.multiChoice
 
 import android.content.Context
+import android.content.Intent
 import android.util.Log
 import android.widget.Toast
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -40,12 +42,15 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.Navigation
 import com.google.gson.Gson
 import mrhi3.ai.studio.GenerativeViewModelFactory
+import mrhi3.ai.studio.MainActivity
 import mrhi3.ai.studio.feature.text.SummarizeUiState
 import mrhi3.ai.studio.feature.text.SummarizeViewModel
 import mrhi3.ai.studio.firebase.saveMultiChoice
 import mrhi3.ai.studio.firebase.showLoading
+import mrhi3.ai.studio.readData
 
 data class CountryOptions(
     val q: String = "대한민국",
@@ -79,7 +84,12 @@ fun checkAnswer(context: Context, selectedAnswer: String, correctAnswer: String)
 }
 
 @Composable
-fun MultiChoiceGame(gameSource: CountryOptions = CountryOptions()) {
+fun MultiChoiceGame(mode:String,gameSource: CountryOptions = CountryOptions()) {
+
+    BackHandler {
+        // 아무런 동작 수행하지 않음으로써 뒤로가기 기능 무시
+    }
+
     var gameData by remember { mutableStateOf(gameSource) }
     var selectedAnswer by remember { mutableStateOf<String?>(null) }
     val context = LocalContext.current
@@ -135,14 +145,6 @@ fun MultiChoiceGame(gameSource: CountryOptions = CountryOptions()) {
         }
     }
 
-    var haveToSave by remember { mutableStateOf(false) }
-
-    if (haveToSave) {
-        saveMultiChoice(context = context, gameData = gameData)
-        haveToSave = false
-        isLoading = false
-    }
-
     var haveToNewGame by remember { mutableStateOf(false) }
 
     if (haveToNewGame) {
@@ -184,6 +186,26 @@ fun MultiChoiceGame(gameSource: CountryOptions = CountryOptions()) {
         }
     }
 
+    var haveToSave by remember { mutableStateOf(false) }
+
+    if (haveToSave) {
+        saveMultiChoice(context = context, gameData = gameData)
+        haveToSave = false
+        isLoading = false
+    }
+
+    var haveToBack by remember { mutableStateOf(false) }
+    if(haveToBack){
+        when(mode){
+            "Main" -> {
+                val intent = Intent(context, MainActivity::class.java)
+                context.startActivity(intent)
+            }else -> {
+                readData()
+            }
+        }
+    }
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -200,7 +222,7 @@ fun MultiChoiceGame(gameSource: CountryOptions = CountryOptions()) {
                 )
         ) {
             IconButton(
-                onClick = {},
+                onClick = {haveToBack = true},
                 modifier = Modifier
                     .align(Alignment.CenterStart)
                     .padding(8.dp)

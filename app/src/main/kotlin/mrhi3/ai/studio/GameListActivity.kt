@@ -2,6 +2,7 @@ package mrhi3.ai.studio
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
+import androidx.activity.OnBackPressedCallback
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -26,30 +27,16 @@ class GameListActivity : ComponentActivity() {
                 ) {
                     Column {
                         setTopAppBar("GameList")
-                        // TODO 게임이 완성되면 Main과 같이 네비 적용할 것
                         readData()
                     }
                 }
             }
-        }
-    }
-}
-
-@Preview
-@Composable
-fun prev() {
-    // 테마
-    GenerativeAISample {
-        // 최상위 뷰
-        Surface(
-            modifier = Modifier.fillMaxSize(),
-            color = MaterialTheme.colorScheme.background
-        ) {
-            Column {
-                setTopAppBar("GameList")
-                // TODO 게임이 완성되면 Main과 같이 네비 적용할 것
-                readData()
-            }
+            // 뒤로가기 버튼을 무시하는 코드
+            onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
+                override fun handleOnBackPressed() {
+                    // 뒤로가기 버튼 동작을 막음
+                }
+            })
         }
     }
 }
