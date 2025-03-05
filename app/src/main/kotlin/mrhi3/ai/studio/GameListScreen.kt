@@ -49,10 +49,21 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import mrhi3.ai.studio.firebase.Source
 import mrhi3.ai.studio.firebase.getData
+import mrhi3.ai.studio.multiChoice.CountryOptions
+import mrhi3.ai.studio.multiChoice.MultiChoiceGame
+
+var theSource: Source? = null
+
+fun saveSource(source: Source) {
+    theSource = source
+}
+
+fun getSource(): Source? {
+    return theSource
+}
 
 @Composable
 fun readData() {
@@ -61,13 +72,6 @@ fun readData() {
 
 @Composable
 fun sourceScreen(sources: List<Source>) {
-
-    /**
-     * TODO -> 게임 저장 구현 후 진행할 것
-     *  드롭다운 메뉴와 새로고침 버튼 추가
-     *  드롭다운 메뉴는 리스팅된 게임을 필터링
-     *  새로고침은 readData() 다시 호출
-     */
 
     var expanded by remember { mutableStateOf(false) }
     var currentText by remember { mutableStateOf("") }
@@ -78,6 +82,18 @@ fun sourceScreen(sources: List<Source>) {
     // 초기 필터 상태
     if (filteredSources.isEmpty()) {
         filteredSources = sources
+    }
+
+    var isMultiChoice by remember { mutableStateOf(false) }
+    if (isMultiChoice) {
+        val gameSource = getSource()
+        MultiChoiceGame(
+            CountryOptions(
+                q = gameSource!!.q,
+                k = gameSource.k,
+                choices = gameSource.choices!!
+            )
+        )
     }
 
     Row(
@@ -97,7 +113,6 @@ fun sourceScreen(sources: List<Source>) {
                 context.getString(R.string.Combination)
             )
             TextField(
-                // TODO 게임 적용 후 카테고리를 적용할 것
                 value = currentText,
                 onValueChange = { currentText = it },
                 readOnly = true,
@@ -112,12 +127,11 @@ fun sourceScreen(sources: List<Source>) {
             ) {
                 categories.forEach { category ->
                     DropdownMenuItem(
-                        // TODO 게임 적용 후 카테고리에 맞게 필터링할 것
                         text = { Text(category) },
                         onClick = {
                             currentText = category
                             expanded = false
-                            // filteredSources = sources.filter { it.content == source.content }
+                            filteredSources = sources.filter { it.cate == category }
                         }
                     )
                 }
@@ -151,26 +165,25 @@ fun sourceScreen(sources: List<Source>) {
                         .padding(all = 16.dp)
                         .fillMaxWidth()
                 ) {
-                    Text(
-                        text = source.id,
-                        style = MaterialTheme.typography.titleMedium
-                    )
-                    Text(
-                        text = source.content,
-                        style = MaterialTheme.typography.titleMedium
-                    )
-                    Text(
-                        text = source.date,
-                        style = MaterialTheme.typography.bodyMedium,
-                        modifier = Modifier.padding(top = 8.dp)
-                    )
-                    TextButton(
-                        onClick = {
-                            //
-                        },
-                        modifier = Modifier.align(Alignment.End)
-                    ) {
-                        Text(text = source.email)
+
+                    if (source.cate == "MultiChoice") {
+                        Text(
+                            text = source.id,
+                            style = MaterialTheme.typography.titleMedium
+                        )
+                        Text(
+                            text = source.choices.toString(),
+                            style = MaterialTheme.typography.titleMedium
+                        )
+                        TextButton(
+                            onClick = {
+                                saveSource(source)
+                                isMultiChoice = true
+                            },
+                            modifier = Modifier.align(Alignment.End)
+                        ) {
+                            Text(text = stringResource(R.string.action_try))
+                        }
                     }
                 }
             }
@@ -178,63 +191,3 @@ fun sourceScreen(sources: List<Source>) {
     }
 }
 
-// TODO 게임이 완성되면 수정 및 적용
-data class GameSource(
-    val gameId: String,
-    val titleResId: Int,
-    val descriptionResId: Int
-)
-
-@Composable
-fun GameListScreen(
-    onItemClicked: (String) -> Unit = { }
-) {
-    val games = listOf(
-        GameSource("select4", R.string.menu_summarize_title, R.string.menu_summarize_description),
-        GameSource("shuffle", R.string.menu_reason_title, R.string.menu_reason_description),
-        GameSource("couple", R.string.menu_chat_title, R.string.menu_chat_description),
-        GameSource("mix", R.string.menu_chat_title, R.string.menu_chat_description)
-    )
-    LazyColumn(
-        Modifier
-            .padding(top = 16.dp, bottom = 16.dp)
-    ) {
-        items(games) { gameSource ->
-            Card(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp, vertical = 8.dp)
-            ) {
-                Column(
-                    modifier = Modifier
-                        .padding(all = 16.dp)
-                        .fillMaxWidth()
-                ) {
-                    Text(
-                        text = stringResource(gameSource.titleResId),
-                        style = MaterialTheme.typography.titleMedium
-                    )
-                    Text(
-                        text = stringResource(gameSource.descriptionResId),
-                        style = MaterialTheme.typography.bodyMedium,
-                        modifier = Modifier.padding(top = 8.dp)
-                    )
-                    TextButton(
-                        onClick = {
-                            onItemClicked(gameSource.gameId)
-                        },
-                        modifier = Modifier.align(Alignment.End)
-                    ) {
-                        Text(text = stringResource(R.string.action_try))
-                    }
-                }
-            }
-        }
-    }
-}
-
-@Preview(showSystemUi = true)
-@Composable
-fun GameListScreenPreview() {
-    readData()
-}

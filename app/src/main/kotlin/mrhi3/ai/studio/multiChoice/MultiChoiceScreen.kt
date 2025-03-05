@@ -10,11 +10,18 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -29,6 +36,7 @@ import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -36,12 +44,13 @@ import com.google.gson.Gson
 import mrhi3.ai.studio.GenerativeViewModelFactory
 import mrhi3.ai.studio.feature.text.SummarizeUiState
 import mrhi3.ai.studio.feature.text.SummarizeViewModel
+import mrhi3.ai.studio.firebase.saveMultiChoice
 import mrhi3.ai.studio.firebase.showLoading
 
 data class CountryOptions(
-    val q: String,
-    val k: String,
-    val choices: List<String>
+    val q: String = "대한민국",
+    val k: String = "서울",
+    val choices: List<String> = listOf("평양", "파리", "도쿄", "서울")
 )
 
 @Composable
@@ -61,7 +70,7 @@ fun getColorForOption(option: String, options: List<String>): Color {
     }
 }
 
-fun checkAnswer(context: Context,selectedAnswer: String, correctAnswer : String) {
+fun checkAnswer(context: Context, selectedAnswer: String, correctAnswer: String) {
     if (selectedAnswer == correctAnswer) {
         Toast.makeText(context, "정답입니다!", Toast.LENGTH_SHORT).show()
     } else {
@@ -70,8 +79,8 @@ fun checkAnswer(context: Context,selectedAnswer: String, correctAnswer : String)
 }
 
 @Composable
-fun MultiChoiceGame() {
-    var gameData by remember { mutableStateOf(CountryOptions("","", emptyList())) }
+fun MultiChoiceGame(gameSource: CountryOptions = CountryOptions()) {
+    var gameData by remember { mutableStateOf(gameSource) }
     var selectedAnswer by remember { mutableStateOf<String?>(null) }
     val context = LocalContext.current
 
@@ -84,18 +93,17 @@ fun MultiChoiceGame() {
     // 명령을 마친 후 작업을 관리할 변수
     var isLoading by remember { mutableStateOf(true) }
 
+    if (isLoading) {
+        showLoading(isLoading)
+    }
+
     // 작업 시작
-    val job = remember { prompt.summarizeStreaming(context,"MultiChoice") }
+    val job = remember { prompt.getCountryOptions(gameData) }
 
     // 완료 확인
     LaunchedEffect(job) {
         job.join() // 작업이 완료될 때까지 기다림
         isLoading = !job.isCompleted
-    }
-
-    if (isLoading) {
-        showLoading(isLoading)
-    } else {
         val result = prompt.getResult()
         when (summarizeUiState) {
             is SummarizeUiState.Success -> {
@@ -127,56 +135,214 @@ fun MultiChoiceGame() {
         }
     }
 
+    var haveToSave by remember { mutableStateOf(false) }
 
-        Column(
+    if (haveToSave) {
+        saveMultiChoice(context = context, gameData = gameData)
+        haveToSave = false
+        isLoading = false
+    }
+
+    var haveToNewGame by remember { mutableStateOf(false) }
+
+    if (haveToNewGame) {
+        LaunchedEffect(haveToNewGame) {
+            // 새 코루틴 작업 인스턴스를 생성합니다.
+            val newJob = prompt.getCountryOptions(gameData)
+            newJob.join() // 작업이 완료될 때까지 대기
+            isLoading = !newJob.isCompleted
+
+            val result = prompt.getResult()
+            when (summarizeUiState) {
+                is SummarizeUiState.Success -> {
+                    Log.d("result", result)
+                    /**
+                     * TODO:
+                     * 문자열을 gameData로 사용할 수 있게 전처리 후 Gson 적용
+                     */
+                    var cleanedJsonString = result.trim()
+                        .removePrefix("json")
+                        .removePrefix("```json")
+                        .removePrefix("```")
+                        .trim()
+                        .removeSuffix("```")
+                        .trim()
+
+                    Log.d("CleanedJson", cleanedJsonString)
+
+                    val gson = Gson()
+                    gameData = gson.fromJson(cleanedJsonString, CountryOptions::class.java)
+                    Log.d("ParsedData", gameData.toString())
+                }
+
+                else -> {
+                    Log.e("error", "Failed to load data.")
+                }
+            }
+            haveToNewGame = false  // 작업 완료 후 상태 리셋
+            isLoading = false
+        }
+    }
+
+    Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(16.dp),
-        horizontalAlignment = Alignment.CenterHorizontally
+            .background(Color(0xFFF5F5F5))
+            .padding(0.dp)
     ) {
-        Text(
-            text = gameData.q + "의 수도는 ?",
-            fontSize = 22.sp,
-            fontWeight = FontWeight.Bold,
-            modifier = Modifier.padding(vertical = 16.dp)
-        )
-
-        Column(
-            modifier = Modifier.weight(1f),
-            verticalArrangement = Arrangement.Center
+        // Title Bar
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(64.dp)
+                .background(
+                    color = MaterialTheme.colorScheme.primary
+                )
         ) {
-            gameData.choices.chunked(2).forEach { rowOptions ->
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceEvenly
+            IconButton(
+                onClick = {},
+                modifier = Modifier
+                    .align(Alignment.CenterStart)
+                    .padding(8.dp)
+            ) {
+                Icon(
+                    imageVector = Icons.Default.ArrowBack,
+                    contentDescription = "Back",
+                    tint = Color.White
+                )
+            }
+
+            Text(
+                text = "MultiChoice".uppercase(),
+                color = Color.White,
+                fontSize = 24.sp,
+                fontWeight = FontWeight.Bold,
+                textAlign = TextAlign.Center,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .align(Alignment.Center)
+                    .padding(horizontal = 48.dp)
+            )
+        }
+
+        // Game Content Area
+        Box(
+            modifier = Modifier
+                .weight(1f)
+                .fillMaxWidth()
+                .padding(top = 16.dp, bottom = 8.dp)
+                .background(
+                    color = Color(0xFFFFFF),
+                    shape = RoundedCornerShape(8.dp)
+                )
+
+        ) {
+            // Game content Area
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(16.dp),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Text(
+                    text = gameData.q + "의 수도는 ?",
+                    fontSize = 22.sp,
+                    fontWeight = FontWeight.Bold,
+                    modifier = Modifier.padding(vertical = 16.dp)
+                )
+
+                Column(
+                    modifier = Modifier.weight(1f),
+                    verticalArrangement = Arrangement.Center
                 ) {
-                    rowOptions.forEach { option ->
-                        Box(
-                            modifier = Modifier
-                                .size(150.dp)
-                                .padding(vertical = 8.dp)
-                                .background(
-                                    color = getColorForOption(option, gameData.choices),
-                                    shape = RoundedCornerShape(4.dp)
-                                )
-                                .shadow(2.dp),
-                            contentAlignment = Alignment.Center
+                    gameData.choices.chunked(2).forEach { rowOptions ->
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceEvenly
                         ) {
-                            Button(
-                                onClick = {
-                                    selectedAnswer = option
-                                    checkAnswer(context,option,gameData.k)
-                                },
-                                colors = ButtonDefaults.buttonColors(containerColor = Color.Transparent),
-                                modifier = Modifier
-                                    .fillMaxSize()
-                            ) {
-                                Text(text = option, color = Color.Black, fontSize = 20.sp)
+                            rowOptions.forEach { option ->
+                                Box(
+                                    modifier = Modifier
+                                        .size(150.dp)
+                                        .padding(vertical = 8.dp)
+                                        .background(
+                                            color = getColorForOption(option, gameData.choices),
+                                            shape = RoundedCornerShape(4.dp)
+                                        )
+                                        .shadow(2.dp),
+                                    contentAlignment = Alignment.Center
+                                ) {
+                                    Button(
+                                        onClick = {
+                                            selectedAnswer = option
+                                            checkAnswer(context, option, gameData.k)
+                                        },
+                                        colors = ButtonDefaults.buttonColors(containerColor = Color.Transparent),
+                                        modifier = Modifier
+                                            .fillMaxSize()
+                                    ) {
+                                        Text(text = option, color = Color.Black, fontSize = 20.sp)
+                                    }
+                                }
                             }
                         }
                     }
                 }
             }
         }
+
+        // Button Row
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(top = 8.dp, bottom = 16.dp),
+            horizontalArrangement = Arrangement.SpaceBetween  // 두 버튼 간의 공간을 동일하게
+        ) {
+            Box(
+                modifier = Modifier
+                    .weight(1f),
+                contentAlignment = Alignment.Center  // 중앙 정렬
+            ) {
+                Button(
+                    onClick = {
+                        haveToNewGame = true
+                        isLoading = true
+                    },
+                    modifier = Modifier
+                        .width(180.dp)
+                        .height(48.dp),
+                    colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.secondary)
+                ) {
+                    Text(
+                        text = "새 게임",
+                        fontSize = 16.sp,
+                        color = Color.White
+                    )
+                }
+            }
+
+            Box(
+                modifier = Modifier.weight(1f),
+                contentAlignment = Alignment.Center
+            ) {
+                Button(
+                    onClick = {
+                        haveToSave = true
+                        isLoading = true
+                    },
+                    modifier = Modifier
+                        .width(180.dp)
+                        .height(48.dp),
+                    colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.secondary)
+                ) {
+                    Text(
+                        text = "저장",
+                        fontSize = 16.sp,
+                        color = Color.White
+                    )
+                }
+            }
+        }
     }
+
 }

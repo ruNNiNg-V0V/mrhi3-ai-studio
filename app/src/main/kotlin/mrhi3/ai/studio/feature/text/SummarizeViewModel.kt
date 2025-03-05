@@ -1,7 +1,5 @@
 package mrhi3.ai.studio.feature.text
 
-import android.content.Context
-import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.ai.client.generativeai.GenerativeModel
@@ -10,7 +8,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
-import mrhi3.ai.studio.R
+import mrhi3.ai.studio.multiChoice.CountryOptions
 
 class SummarizeViewModel(
     private val generativeModel: GenerativeModel
@@ -25,22 +23,20 @@ class SummarizeViewModel(
 
     fun getResult() = outputContent
 
-    fun summarizeStreaming(context: Context, category: String): Job {
+    fun getCountryOptions(gameData: CountryOptions): Job {
         _uiState.value = SummarizeUiState.Loading
 
-        var prompt = ""
-
-        when (category) {
-            "MultiChoice" -> {
-                prompt = """
-                    ${context.getString(R.string.multi_choice_prompt)}
-                    """.trimIndent()
-            }
-
-            else -> {
-                // 등록되지 않은 게임
-            }
-        }
+        val prompt = """
+                    1. 무작위로 나라를 하나 선정
+                    2. 선정된 나라를 수도를 포함하여 각기 다른 나라의 수도를 넷 선정
+                    3. 답변 예시 {
+                        q: "${gameData.q}",
+                        k : "${gameData.k}",
+                        choices : ${gameData.choices}
+                    }
+                    4. choices의 개수가 4개여야 한다
+                    5. 답변은 json만
+        """.trimIndent()
 
 
         val job = viewModelScope.launch {

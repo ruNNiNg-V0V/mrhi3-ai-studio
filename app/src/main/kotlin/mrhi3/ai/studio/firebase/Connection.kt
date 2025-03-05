@@ -17,11 +17,11 @@ import androidx.compose.ui.Modifier
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.ktx.Firebase
+import com.google.gson.Gson
 import kotlinx.coroutines.tasks.await
 import mrhi3.ai.studio.GameListActivity
 import mrhi3.ai.studio.R
-import com.google.gson.Gson
-import java.util.Date
+import mrhi3.ai.studio.multiChoice.CountryOptions
 
 @Composable
 fun showLoading(isLoading: Boolean) {
@@ -57,10 +57,12 @@ fun signIn(context: Context) {
 
 // 파이어베이스 불러오기 예시 데이터 클래스
 data class Source(
+    val cate: String,
     val id: String,
-    val content: String,
-    val date: String,
-    val email: String
+    val q: String,
+    val k: String,
+    val choices: List<String>?,
+    val hints: List<String>?
 )
 
 val gson = Gson()
@@ -79,17 +81,19 @@ fun getData(): List<Source> {
     LaunchedEffect(Unit) {
         try {
             // documents가 초기화 될 때 까지 로딩 나타내기
-            val documents = db.collection("news").get().await()
+            val documents = db.collection("games").get().await()
             val sources = documents.map { document ->
                 val id = document.id // document가 json으로 변경되면서 id는 빠짐
                 val json = gson.toJson(document.data) // 받아온 데이터를 json으로 변환
                 val data = gson.fromJson(json, Source::class.java) // json을 Source로 변환
                 // document를 Source로 변환
                 Source(
-                    id = id,
-                    content = data.content,
-                    date = data.date,
-                    email = data.email
+                    cate = data.cate,
+                    id = data.id,
+                    q = data.q,
+                    k = data.k,
+                    choices = data.choices ?: listOf(),
+                    hints = data.hints ?: listOf()
                 )
             }
             if (sources.isNotEmpty()) {
@@ -105,7 +109,7 @@ fun getData(): List<Source> {
 }
 
 @Composable
-fun saveData(context: Context) {
+fun saveMultiChoice(context: Context, gameData: CountryOptions) {
 
     // 응답을 기다리는 동안 로딩 표시
     var isLoading by remember { mutableStateOf(true) }
@@ -121,10 +125,12 @@ fun saveData(context: Context) {
      */
 
     val data = Source(
-        id = "selection4",
-        content = "머시깽이",
-        date = "20250224",
-        email = "william.h.taft@my-own-personal-domain.com"
+        cate = "MultiChoice",
+        id = gameData . q +"의 수도는",
+        q = gameData.q,
+        k = gameData.k,
+        choices = gameData.choices,
+        hints = listOf()
     )
 
     db.collection("games")

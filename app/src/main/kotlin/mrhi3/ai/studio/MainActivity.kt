@@ -29,6 +29,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import mrhi3.ai.studio.multiChoice.MultiChoiceGame
 import mrhi3.ai.studio.ui.theme.GenerativeAISample
 import mrhi3.ai.studio.ui.theme.setTopAppBar
 
@@ -60,48 +61,9 @@ class MainActivity : ComponentActivity() {
                                     navController.navigate(routeId)
                                 })
                             }
-                            menuItems.forEach {
-                                val category = it.routeId
-                                composable(category) {
-                                    BaseGameScreen(category,{},{},{})
-                                }
+                            composable("MultiChoice") {
+                                MultiChoiceGame()
                             }
-                        }
-                    }
-                }
-            }
-        }
-    }
-}
-
-@Preview(showSystemUi = true)
-@Composable
-fun SimpleComposablePreview() {
-    GenerativeAISample {
-        // 최상위 뷰
-        Surface(
-            modifier = Modifier.fillMaxSize(),
-            color = MaterialTheme.colorScheme.background
-        ) {
-            Column {
-
-                setTopAppBar("Main")
-
-                // 내비 컨트롤러
-                val navController = rememberNavController()
-                // 내비 빌더
-                NavHost(navController = navController, startDestination = "menu") {
-                    // 내비 메뉴 및 클릭 이벤트
-                    composable("menu") {
-                        MenuScreen(onItemClicked = { routeId ->
-                            // 클릭된 뷰의 routeId에 따라 화면 전환
-                            navController.navigate(routeId)
-                        })
-                    }
-                    menuItems.forEach {
-                        val category = it.routeId
-                        composable(category) {
-                            BaseGameScreen(category,{},{},{})
                         }
                     }
                 }
