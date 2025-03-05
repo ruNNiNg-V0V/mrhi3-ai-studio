@@ -33,6 +33,7 @@ import androidx.navigation.compose.rememberNavController
 import mrhi3.ai.studio.multiChoice.MultiChoiceGame
 import mrhi3.ai.studio.ui.theme.GenerativeAISample
 import mrhi3.ai.studio.ui.theme.setTopAppBar
+import mrhi3.ai.studio.wordscramble.WordScrambleGame
 
 
 class MainActivity : ComponentActivity() {
@@ -64,6 +65,9 @@ class MainActivity : ComponentActivity() {
                             }
                             composable("MultiChoice") {
                                 MultiChoiceGame("Main")
+                            }
+                            composable("WordScramble") {
+                                WordScrambleGame(mode = "Main")
                             }
                         }
                     }

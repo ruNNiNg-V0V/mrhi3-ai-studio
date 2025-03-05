@@ -1,5 +1,6 @@
 package mrhi3.ai.studio.feature.text
 
+import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.ai.client.generativeai.GenerativeModel
@@ -9,6 +10,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import mrhi3.ai.studio.multiChoice.CountryOptions
+
 
 class SummarizeViewModel(
     private val generativeModel: GenerativeModel
@@ -36,6 +38,23 @@ class SummarizeViewModel(
                     }
                     4. choices의 개수가 4개여야 한다
                     5. 답변은 json만
+        """.trimIndent()
+
+        fun getWordScramble(context: Context, category: String): Job {
+            _uiState.value = SummarizeUiState.Loading
+
+            val prompt = """
+        Generate a word scramble game data in JSON format with two fields:
+        1. CW (Correct Word): the original word that players need to guess
+        2. SW (Scrambled Word): a shuffled version of the CW
+
+        Please provide a single English word (5-8 letters) that is common and easy and capital letters.
+        IMPORTANT: Return only the JSON data, without any explanation or markdown formatting.
+        example:
+        {
+            "CW": " ",
+            "SW": " "
+        }
         """.trimIndent()
 
 

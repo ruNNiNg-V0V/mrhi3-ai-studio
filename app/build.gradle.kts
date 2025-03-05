@@ -110,4 +110,5 @@ dependencies {
     implementation("com.firebaseui:firebase-ui-storage:8.0.2")
     implementation("com.google.firebase:firebase-messaging-ktx:23.2.1")
     implementation("com.google.firebase:firebase-analytics-ktx")
+    implementation("com.google.mlkit:text-recognition:16.0.0")
 }

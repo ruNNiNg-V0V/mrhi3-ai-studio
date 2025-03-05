@@ -21,6 +21,7 @@ import com.google.gson.Gson
 import kotlinx.coroutines.tasks.await
 import mrhi3.ai.studio.GameListActivity
 import mrhi3.ai.studio.R
+import mrhi3.ai.studio.wordscramble.WordScrambleData
 import mrhi3.ai.studio.multiChoice.CountryOptions
 
 @Composable
@@ -57,19 +58,18 @@ fun signIn(context: Context) {
 
 // 파이어베이스 불러오기 예시 데이터 클래스
 data class Source(
-    val cate: String,
-    val id: String,
-    val q: String,
-    val k: String,
-    val choices: List<String>?,
-    val hints: List<String>?
+    val cate: String = "",
+    val id: String = "",
+    val q: String = "",
+    val k: String = "",
+    val choices: List<String>? = null,
+    val hints: List<String>? = null
 )
 
 val gson = Gson()
 
 @Composable
 fun getData(): List<Source> {
-
     // 응답을 기다리는 동안 로딩 표시
     var isLoading by remember { mutableStateOf(true) }
     showLoading(isLoading)
@@ -110,23 +110,15 @@ fun getData(): List<Source> {
 
 @Composable
 fun saveMultiChoice(context: Context, gameData: CountryOptions) {
-
     // 응답을 기다리는 동안 로딩 표시
     var isLoading by remember { mutableStateOf(true) }
     showLoading(isLoading)
 
     val db = FirebaseFirestore.getInstance()
 
-    /**
-     * TODO
-     *  게임이 구현되면 data 수정
-     *  게임별 json을 받을 수 있는 하나의 data class 추가
-     *  getData()에서 불러 올 데이터 new -> games 수정할 것
-     */
-
     val data = Source(
         cate = "MultiChoice",
-        id = gameData . q +"의 수도는",
+        id = gameData.q + "의 수도는",
         q = gameData.q,
         k = gameData.k,
         choices = gameData.choices,
@@ -145,4 +137,31 @@ fun saveMultiChoice(context: Context, gameData: CountryOptions) {
         }
 }
 
+@Composable
+fun saveWordScramble(context: Context, gameData: WordScrambleData) {
+    // 응답을 기다리는 동안 로딩 표시
+    var isLoading by remember { mutableStateOf(true) }
+    showLoading(isLoading)
 
+    val db = FirebaseFirestore.getInstance()
+
+    val data = Source(
+        cate = "WordScramble",
+        id = "단어 맞추기: ${gameData.CW}", // 또는 다른 식별자 사용
+        q = gameData.SW, // 섞인 단어
+        k = gameData.CW, // 정답 단어
+        choices = null, // WordScramble은 선택지 없음
+        hints = null // WordScramble은 힌트 없음
+    )
+
+    db.collection("games")
+        .add(data)
+        .addOnSuccessListener {
+            isLoading = false
+            Toast.makeText(context, "게임 데이터 저장 성공!!", Toast.LENGTH_SHORT).show()
+        }
+        .addOnFailureListener {
+            isLoading = false
+            Toast.makeText(context, "게임 데이터 저장 실패!!", Toast.LENGTH_SHORT).show()
+        }
+}

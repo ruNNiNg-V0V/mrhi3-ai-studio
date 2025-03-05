@@ -1,20 +1,4 @@
-/*
- * Copyright 2023 Google LLC
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
 
-@file:OptIn(ExperimentalMaterial3Api::class)
 
 package mrhi3.ai.studio
 
@@ -50,6 +34,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import mrhi3.ai.studio.wordscramble.WordScrambleData
+import mrhi3.ai.studio.wordscramble.WordScrambleGame
 import mrhi3.ai.studio.firebase.Source
 import mrhi3.ai.studio.firebase.getData
 import mrhi3.ai.studio.multiChoice.CountryOptions
@@ -84,16 +70,37 @@ fun sourceScreen(sources: List<Source>) {
         filteredSources = sources
     }
 
+    // 게임 화면 보여주기 상태
     var isMultiChoice by remember { mutableStateOf(false) }
+    var isWordScramble by remember { mutableStateOf(false) }
+
     if (isMultiChoice) {
         val gameSource = getSource()
-        MultiChoiceGame("GameList",
-            CountryOptions(
-                q = gameSource!!.q,
-                k = gameSource.k,
-                choices = gameSource.choices!!
+        if (gameSource != null) {
+            MultiChoiceGame(
+                "GameList",
+                CountryOptions(
+                    q = gameSource.q,
+                    k = gameSource.k,
+                    choices = gameSource.choices ?: listOf()
+                )
             )
-        )
+        }
+        return
+    }
+
+    if (isWordScramble) {
+        val gameSource = getSource()
+        if (gameSource != null) {
+            WordScrambleGame(
+                mode = "GameList",
+                gameSource = WordScrambleData(
+                    SW = gameSource.q,
+                    CW = gameSource.k
+                )
+            )
+        }
+        return
     }
 
     Row(
@@ -165,24 +172,55 @@ fun sourceScreen(sources: List<Source>) {
                         .padding(all = 16.dp)
                         .fillMaxWidth()
                 ) {
+                    Text(
+                        text = source.id,
+                        style = MaterialTheme.typography.titleMedium
+                    )
 
-                    if (source.cate == "MultiChoice") {
-                        Text(
-                            text = source.id,
-                            style = MaterialTheme.typography.titleMedium
-                        )
-                        Text(
-                            text = source.choices.toString(),
-                            style = MaterialTheme.typography.titleMedium
-                        )
-                        TextButton(
-                            onClick = {
-                                saveSource(source)
-                                isMultiChoice = true
-                            },
-                            modifier = Modifier.align(Alignment.End)
-                        ) {
-                            Text(text = stringResource(R.string.action_try))
+                    when (source.cate) {
+                        "MultiChoice" -> {
+                            Text(
+                                text = "선택지: " + (source.choices?.joinToString(", ") ?: ""),
+                                style = MaterialTheme.typography.bodyMedium
+                            )
+                            TextButton(
+                                onClick = {
+                                    saveSource(source)
+                                    isMultiChoice = true
+                                },
+                                modifier = Modifier.align(Alignment.End)
+                            ) {
+                                Text(text = stringResource(R.string.action_try))
+                            }
+                        }
+                        "WordScramble" -> {
+                            Text(
+                                text = "섞인 단어: ${source.q}",
+                                style = MaterialTheme.typography.bodyMedium
+                            )
+                            TextButton(
+                                onClick = {
+                                    saveSource(source)
+                                    isWordScramble = true
+                                },
+                                modifier = Modifier.align(Alignment.End)
+                            ) {
+                                Text(text = stringResource(R.string.action_try))
+                            }
+                        }
+                        else -> {
+                            Text(
+                                text = "카테고리: ${source.cate}",
+                                style = MaterialTheme.typography.bodyMedium
+                            )
+                            TextButton(
+                                onClick = {
+                                    // 다른 게임 유형 처리
+                                },
+                                modifier = Modifier.align(Alignment.End)
+                            ) {
+                                Text(text = stringResource(R.string.action_try))
+                            }
                         }
                     }
                 }
@@ -190,4 +228,3 @@ fun sourceScreen(sources: List<Source>) {
         }
     }
 }
-
