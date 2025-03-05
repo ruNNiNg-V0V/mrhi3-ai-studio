@@ -7,6 +7,7 @@ color purple_700
 color teal_200
 color teal_700
 color white
+drawable firebase_full_color
 drawable ic_launcher_background
 drawable ic_launcher_foreground
 drawable image
@@ -14,24 +15,55 @@ drawable image1
 drawable image2
 mipmap ic_launcher
 mipmap ic_launcher_round
+string Combination
+string MatchingCards
+string MultiChoice
+string WordScramble
 string action_go
 string action_send
 string action_try
 string add_image
 string app_name
+string arrowBack
 string chat_label
+string combination_ex
+string combination_label
+string combination_send
+string default_web_client_id
+string firebase
+string gcm_defaultSenderId
+string google_api_key
+string google_app_id
+string google_crash_reporting_api_key
+string google_storage_bucket
+string id
+string menu_Combination_description
+string menu_Combination_title
+string menu_MatchingCards_description
+string menu_MatchingCards_title
+string menu_MultiChoice_description
+string menu_MultiChoice_title
+string menu_WordScramble_description
+string menu_WordScramble_title
 string menu_chat_description
 string menu_chat_title
 string menu_reason_description
 string menu_reason_title
 string menu_summarize_description
 string menu_summarize_title
+<<<<<<< Updated upstream
 string menu_wordscramble_description
 string menu_wordscramble_title
+=======
+string multi_choice_prompt
+string project_id
+string pw
+>>>>>>> Stashed changes
 string reason_hint
 string reason_label
 string summarize_hint
 string summarize_label
+<<<<<<< Updated upstream
 string wordscramble_analyzing
 string wordscramble_answer_hint
 string wordscramble_back
@@ -43,5 +75,9 @@ string wordscramble_save
 string wordscramble_title
 string wordscramble_wrong
 style Theme.Emptything
+=======
+string word_scramble_prompt
+style Theme.EmptyThing
+>>>>>>> Stashed changes
 xml backup_rules
 xml data_extraction_rules
