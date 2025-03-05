@@ -84,7 +84,7 @@ fun checkAnswer(context: Context, selectedAnswer: String, correctAnswer: String)
 }
 
 @Composable
-fun MultiChoiceGame(mode:String,gameSource: CountryOptions = CountryOptions()) {
+fun MultiChoiceGame(mode: String, gameSource: CountryOptions = CountryOptions()) {
 
     BackHandler {
         // 아무런 동작 수행하지 않음으로써 뒤로가기 기능 무시
@@ -101,46 +101,48 @@ fun MultiChoiceGame(mode:String,gameSource: CountryOptions = CountryOptions()) {
     val summarizeUiState by prompt.uiState.collectAsState()
 
     // 명령을 마친 후 작업을 관리할 변수
-    var isLoading by remember { mutableStateOf(true) }
+    var isLoading by remember { mutableStateOf(false) }
 
     if (isLoading) {
         showLoading(isLoading)
     }
 
-    // 작업 시작
-    val job = remember { prompt.getCountryOptions(gameData) }
-
     // 완료 확인
-    LaunchedEffect(job) {
-        job.join() // 작업이 완료될 때까지 기다림
-        isLoading = !job.isCompleted
-        val result = prompt.getResult()
-        when (summarizeUiState) {
-            is SummarizeUiState.Success -> {
-                Log.d("result", result)
-                /**
-                 * TODO
-                 * 문자열을 gameData로 사용할 수 있게 전처리 후 Gson 적용
-                 */
-                var cleanedJsonString = result.trim()
+    if (mode == "Main") {
+        // 작업 시작
+        val job = remember { prompt.getCountryOptions(gameData) }
+        isLoading = true
+        LaunchedEffect(job) {
+            job.join() // 작업이 완료될 때까지 기다림
+            isLoading = !job.isCompleted
+            val result = prompt.getResult()
+            when (summarizeUiState) {
+                is SummarizeUiState.Success -> {
+                    Log.d("result", result)
+                    /**
+                     * TODO
+                     * 문자열을 gameData로 사용할 수 있게 전처리 후 Gson 적용
+                     */
+                    var cleanedJsonString = result.trim()
 
-                //불필요한 문자 제거
-                cleanedJsonString = cleanedJsonString
-                    .removePrefix("json")
-                    .removePrefix("```json")
-                    .removePrefix("```")
-                    .trim()
+                    //불필요한 문자 제거
+                    cleanedJsonString = cleanedJsonString
+                        .removePrefix("json")
+                        .removePrefix("```json")
+                        .removePrefix("```")
+                        .trim()
 
-                cleanedJsonString = cleanedJsonString.removeSuffix("```").trim()
-                Log.d("CleanedJson", cleanedJsonString)
+                    cleanedJsonString = cleanedJsonString.removeSuffix("```").trim()
+                    Log.d("CleanedJson", cleanedJsonString)
 
-                val gson = Gson()
-                gameData = gson.fromJson(cleanedJsonString, CountryOptions::class.java)
-                Log.d("ParsedData", gameData.toString())
-            }
+                    val gson = Gson()
+                    gameData = gson.fromJson(cleanedJsonString, CountryOptions::class.java)
+                    Log.d("ParsedData", gameData.toString())
+                }
 
-            else -> {
-                Log.e("error", "Failed to load data.")
+                else -> {
+                    Log.e("error", "Failed to load data.")
+                }
             }
         }
     }
@@ -195,12 +197,14 @@ fun MultiChoiceGame(mode:String,gameSource: CountryOptions = CountryOptions()) {
     }
 
     var haveToBack by remember { mutableStateOf(false) }
-    if(haveToBack){
-        when(mode){
+    if (haveToBack) {
+        when (mode) {
             "Main" -> {
                 val intent = Intent(context, MainActivity::class.java)
                 context.startActivity(intent)
-            }else -> {
+            }
+
+            else -> {
                 readData()
             }
         }
@@ -222,7 +226,7 @@ fun MultiChoiceGame(mode:String,gameSource: CountryOptions = CountryOptions()) {
                 )
         ) {
             IconButton(
-                onClick = {haveToBack = true},
+                onClick = { haveToBack = true },
                 modifier = Modifier
                     .align(Alignment.CenterStart)
                     .padding(8.dp)
