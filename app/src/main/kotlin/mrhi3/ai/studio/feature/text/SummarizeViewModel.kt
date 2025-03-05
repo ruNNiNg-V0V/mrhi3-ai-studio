@@ -16,6 +16,7 @@
 
 package mrhi3.ai.studio.feature.text
 
+import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.ai.client.generativeai.GenerativeModel
@@ -23,6 +24,11 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+<<<<<<< Updated upstream
+=======
+import mrhi3.ai.studio.multiChoice.CountryOptions
+import mrhi3.ai.studio.wordscramble.WordScrambleData
+>>>>>>> Stashed changes
 
 class SummarizeViewModel(
     private val generativeModel: GenerativeModel
@@ -71,5 +77,36 @@ class SummarizeViewModel(
                 _uiState.value = SummarizeUiState.Error(e.localizedMessage ?: "")
             }
         }
+    }
+    fun getWordScramble(context: Context, category: String): Job {
+        _uiState.value = SummarizeUiState.Loading
+
+        val prompt = """
+        Generate a word scramble game data in JSON format with two fields:
+        1. CW (Correct Word): the original word that players need to guess
+        2. SW (Scrambled Word): a shuffled version of the CW
+
+        Please provide a single English word (5-8 letters) that is common and easy and capital letters.
+        IMPORTANT: Return only the JSON data, without any explanation or markdown formatting.
+        example:
+        {
+            "CW": " ",
+            "SW": " "
+        }
+        """.trimIndent()
+
+        val job = viewModelScope.launch {
+            outputContent = ""
+            try {
+                generativeModel.generateContentStream(prompt)
+                    .collect { response ->
+                        outputContent += response.text
+                        _uiState.value = SummarizeUiState.Success(outputContent)
+                    }
+            } catch (e: Exception) {
+                _uiState.value = SummarizeUiState.Error(e.localizedMessage ?: "")
+            }
+        }
+        return job
     }
 }

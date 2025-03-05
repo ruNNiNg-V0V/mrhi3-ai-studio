@@ -22,8 +22,8 @@ import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
-import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+<<<<<<< Updated upstream
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -36,6 +36,13 @@ import mrhi3.ai.studio.feature.multimodal.PhotoReasoningRoute
 import mrhi3.ai.studio.feature.text.SummarizeRoute
 import mrhi3.ai.studio.feature.wordscramble.WordScrambleScreen
 import mrhi3.ai.studio.feature.wordscramble.WordScrambleViewModelFactory
+=======
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
+import mrhi3.ai.studio.wordscramble.WordScrambleGame
+import mrhi3.ai.studio.multiChoice.MultiChoiceGame
+>>>>>>> Stashed changes
 import mrhi3.ai.studio.ui.theme.GenerativeAISample
 
 class MainActivity : ComponentActivity() {
@@ -74,6 +81,7 @@ class MainActivity : ComponentActivity() {
                             ChatRoute()
                         }
 
+<<<<<<< Updated upstream
                         // Word Scramble 게임 화면
                         composable("wordscramble") {
                             val chatViewModel = viewModel<ChatViewModel>(factory = GenerativeViewModelFactory)
@@ -81,6 +89,25 @@ class MainActivity : ComponentActivity() {
                                 onBackPressed = { navController.popBackStack() },
                                 viewModelFactory = WordScrambleViewModelFactory(LocalContext.current, chatViewModel)
                             )
+=======
+                        // 내비 컨트롤러
+                        val navController = rememberNavController()
+                        // 내비 빌더
+                        NavHost(navController = navController, startDestination = "menu") {
+                            // 내비 메뉴 및 클릭 이벤트
+                            composable("menu") {
+                                MenuScreen(onItemClicked = { routeId ->
+                                    // 클릭된 뷰의 routeId에 따라 화면 전환
+                                    navController.navigate(routeId)
+                                })
+                            }
+                            composable("MultiChoice") {
+                                MultiChoiceGame("Main")
+                            }
+                            composable("WordScramble") {
+                                WordScrambleGame(mode = "Main")
+                            }
+>>>>>>> Stashed changes
                         }
                     }
                 }

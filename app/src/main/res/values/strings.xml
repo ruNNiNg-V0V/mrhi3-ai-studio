@@ -53,4 +53,18 @@
     <string name="wordscramble_error">오류가 발생했습니다</string>
     <string name="wordscramble_back">뒤로 가기</string>
 
+    <string name="word_scramble_prompt">
+Generate a word scramble game data in JSON format with two fields:
+        1. CW (Correct Word): the original word that players need to guess
+        2. SW (Scrambled Word): a shuffled version of the CW
+
+        Please provide a single English word (5-8 letters) that is common and educational.
+        IMPORTANT: Return only the JSON data, without any explanation or markdown formatting.
+        example:
+        {
+            "CW": "APPLE"
+            "SW": "EALPP"
+        }
+</string>
+
 </resources>
