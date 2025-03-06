@@ -1,5 +1,7 @@
 package mrhi3.ai.studio.feature.text
 
+import Card
+import MatchingCards
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.ai.client.generativeai.GenerativeModel
@@ -22,7 +24,7 @@ class SummarizeViewModel(
 
     fun getResult() = outputContent
 
-    fun summarizeStreaming(): Job {
+    fun getMatchingCards(gameSource: MatchingCards): Job {
         _uiState.value = SummarizeUiState.Loading
 
         // ai에 요청할 명령
@@ -33,12 +35,12 @@ class SummarizeViewModel(
             4. 선정된 특산물의 지역명을 가져온다. 
             5. 6짝의 데이터를 A~G의 json으로 만들어서 출력한다 
             6. 답변 예시 {
-                A : ["원주시","감자"],
-                B : ["제주시","감귤"],
-                C : ["영광군","굴비"],
-                D : ["나주시","배"],
-                E : ["가평시","잣"],
-                F : ["신안군","천일렴"]
+                A : ["${gameSource.A[0]}","${gameSource.A[1]}"],
+                B : ["${gameSource.B[0]}","${gameSource.B[1]}"],
+                C : ["${gameSource.C[0]}","${gameSource.C[1]}"],
+                D : ["${gameSource.D[0]}","${gameSource.D[1]}"],
+                E : ["${gameSource.E[0]}","${gameSource.E[1]}"],
+                F : ["${gameSource.F[0]}","${gameSource.F[1]}"]
             }
             7. 답변은 json만
         """.trimIndent()

@@ -61,7 +61,7 @@ internal fun SummarizeRoute(
     // 뷰 화면을 불러오는 컴포즈 함수
     SummarizeScreen(summarizeUiState, onSummarizeClicked = { inputText ->
         // 입력된 텍스트로 클릭 이벤트 처리
-        summarizeViewModel.summarizeStreaming()
+        //summarizeViewModel.summarizeStreaming()
     })
 }
 

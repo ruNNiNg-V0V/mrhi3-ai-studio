@@ -17,7 +17,6 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -44,95 +43,84 @@ data class Card(
     val elevation: Dp = 4.dp
 )
 
-// JSON 문자열에서 '''를 제거하는 함수
-fun cleanJsonString(rawJson: String): String {
-    return rawJson
-        .replace("```", "") // 작은따옴표 제거
-        .replace("\n", "")  // 줄바꿈 제거
-        .replace("json","")
-        .trim()             // 앞뒤 공백 제거
-}
-
-// JSON 데이터를 UTF-8로 디코딩하고 추가 처리를 수행하는 함수
-fun processAiResult(rawResult: String): String {
-    val cleanedResult = cleanJsonString(rawResult)
-    return cleanedResult
-}
-
-// JSON 문자열을 Card 리스트로 변환하는 함수
-fun parseJsonToGameData(jsonString: String): List<Card> {
-    val gson = Gson()
-    val type = object : TypeToken<Map<String, List<String>>>() {}.type
-    val parsedMap: Map<String, List<String>> = gson.fromJson(jsonString, type)
-
-    val cards = mutableListOf<Card>()
-    parsedMap.forEach { (key, values) ->
-        values.forEach { value ->
-            cards.add(Card(value = key, label = value))
-        }
-    }
-
-    return cards.shuffled() // 카드 섞기
-}
-
-// JSON 데이터를 gameData에 초기화
-fun initializeGameDataFromJson(gameData: MutableList<Card>, rawJson: String) {
-    try {
-        val cleanedJson = cleanJsonString(rawJson)
-        Log.d("MatchingGameDebug", "Cleaned JSON: $cleanedJson")
-        val parsedCards = parseJsonToGameData(cleanedJson)
-        gameData.clear()
-        gameData.addAll(parsedCards)
-    } catch (e: Exception) {
-        Log.e("MatchingGameDebug", "Failed to initialize game data: ${e.message}")
-    }
-}
+data class MatchingCards(
+    val A: List<String> = listOf("강원도","감자"),
+    val B: List<String> = listOf("전라도","김치"),
+    val C: List<String> = listOf("경상도","사과"),
+    val D: List<String> = listOf("충청도","딸기"),
+    val E: List<String> = listOf("경기도","한우"),
+    val F: List<String> = listOf("제주도","감귤")
+)
 
 @Composable
-fun MatchingGame() {
-    val gameData = remember { mutableStateListOf<Card>() }
+fun MatchingGame(gameSource: MatchingCards = MatchingCards()) {
+
+    var dataSource = gameSource
+
+    val cards = mutableListOf<Card>()
+
+    // MatchingCards의 각 속성에 접근하여 처리
+    dataSource.run {
+        A.forEach { value -> cards.add(Card(value = "A", label = value)) }
+        B.forEach { value -> cards.add(Card(value = "B", label = value)) }
+        C.forEach { value -> cards.add(Card(value = "C", label = value)) }
+        D.forEach { value -> cards.add(Card(value = "D", label = value)) }
+        E.forEach { value -> cards.add(Card(value = "E", label = value)) }
+        F.forEach { value -> cards.add(Card(value = "F", label = value)) }
+    }
+
+    var gameData by remember { mutableStateOf(cards.shuffled()) }
+    Log.d("gameData", gameData.toString())
     val firstCard = remember { mutableStateOf<Card?>(null) }
 
     fun setFirstCard(card: Card?) {
         firstCard.value = card
     }
 
-    // 게임 데이터 초기화
-    LaunchedEffect(Unit) {
-        val rawJson = """
-            {
-                "A": ["강원도", "감자"],
-                "B": ["전라도", "김치"],
-                "C": ["경상도", "사과"],
-                "D": ["충청도", "딸기"],
-                "E": ["경기도", "한우"],
-                "F": ["제주도", "감귤"]
-            }
-        """
-        initializeGameDataFromJson(gameData, rawJson)
-    }
-
     // AI로 게임 소스 불러오기
     val prompt: SummarizeViewModel = viewModel(factory = GenerativeViewModelFactory)
     val summarizeUiState by prompt.uiState.collectAsState()
     var isLoading by remember { mutableStateOf(true) }
-    val job = remember { prompt.summarizeStreaming() }
+    val job = remember { prompt.getMatchingCards(dataSource) }
 
     LaunchedEffect(job) {
         job.join()
         isLoading = summarizeUiState !is SummarizeUiState.Success
         val rawResult = prompt.getResult()
-        val processedResult = processAiResult(rawResult)
         when (summarizeUiState) {
             is SummarizeUiState.Success -> {
-                Log.d("MatchingGameDebug", processedResult)
-                initializeGameDataFromJson(gameData, processedResult)
+                Log.d("MatchingGameDebug", rawResult)
+                val rawJson = rawResult.replace("```", "") // 작은따옴표 제거
+                    .replace("\n", "")  // 줄바꿈 제거
+                    .replace("json", "")
+                    .trim()             // 앞뒤 공백 제거
+                Log.d("MatchingGameDebug", "Cleaned JSON: $rawJson")
+
+                val gson = Gson()
+                val parsedMap = gson.fromJson(rawJson, MatchingCards::class.java)
+                dataSource = parsedMap
+                val cards = mutableListOf<Card>()
+                // MatchingCards의 각 속성에 접근하여 처리
+
+                parsedMap.run {
+                    A.forEach { value -> cards.add(Card(value = "A", label = value)) }
+                    B.forEach { value -> cards.add(Card(value = "B", label = value)) }
+                    C.forEach { value -> cards.add(Card(value = "C", label = value)) }
+                    D.forEach { value -> cards.add(Card(value = "D", label = value)) }
+                    E.forEach { value -> cards.add(Card(value = "E", label = value)) }
+                    F.forEach { value -> cards.add(Card(value = "F", label = value)) }
+                }
+                gameData = cards.shuffled()
+                Log.d("MatchingGameDebug", "Cleaned JSON: $rawJson")
             }
+
             else -> {
                 Log.d("MatchingGameDebug", "Failed to load data")
             }
+
         }
     }
+
 
     if (isLoading) {
         showLoading(isLoading)
@@ -152,7 +140,7 @@ fun MatchingGame() {
 
 @Composable
 fun MatchingGameUI(
-    gameDataLeft: MutableList<Card>,
+    gameDataLeft: List<Card>,
     firstCard: MutableState<Card?>,
     setFirstCard: (Card?) -> Unit
 ) {
