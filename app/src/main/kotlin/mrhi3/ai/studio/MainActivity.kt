@@ -67,7 +67,7 @@ class MainActivity : ComponentActivity() {
                                 MultiChoiceGame("Main")
                             }
                             composable("WordScramble") {
-                                WordScrambleGame(mode = "Main")
+                                WordScrambleGame("Main")
                             }
                         }
                     }

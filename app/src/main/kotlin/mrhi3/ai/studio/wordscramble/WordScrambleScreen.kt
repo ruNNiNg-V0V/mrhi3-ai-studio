@@ -46,7 +46,7 @@ data class WordScrambleData(
 
 @Composable
 fun WordScrambleGame(
-    mode: String = "",
+    mode: String,
     gameSource: WordScrambleData = WordScrambleData()
 ) {
     BackHandler {
@@ -89,7 +89,7 @@ fun WordScrambleGame(
     // 작업 시작 (GameList에서 들어온 경우 실행하지 않음)
     val job = remember {
         if (mode != "GameList") {
-            prompt.getWordScramble(context, "WordScramble")
+            prompt.getWordScramble(gameData)
         } else null
     }
 
@@ -141,7 +141,7 @@ fun WordScrambleGame(
     if (haveToNewGame) {
         LaunchedEffect(haveToNewGame) {
             // 새 코루틴 작업 인스턴스를 생성합니다.
-            val newJob = prompt.getWordScramble(context, "WordScramble")
+            val newJob = prompt.getWordScramble(gameData)
             newJob.join() // 작업이 완료될 때까지 대기
             isLoading = !newJob.isCompleted
 
@@ -149,7 +149,7 @@ fun WordScrambleGame(
             when (summarizeUiState) {
                 is SummarizeUiState.Success -> {
                     Log.d("result", result)
-                    var cleanedJsonString = result.trim()
+                    val cleanedJsonString = result.trim()
                         .removePrefix("json")
                         .removePrefix("```json")
                         .removePrefix("```")

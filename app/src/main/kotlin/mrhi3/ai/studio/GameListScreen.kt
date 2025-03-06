@@ -1,5 +1,3 @@
-
-
 package mrhi3.ai.studio
 
 import androidx.compose.foundation.layout.Column
@@ -34,12 +32,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import mrhi3.ai.studio.wordscramble.WordScrambleData
-import mrhi3.ai.studio.wordscramble.WordScrambleGame
 import mrhi3.ai.studio.firebase.Source
 import mrhi3.ai.studio.firebase.getData
 import mrhi3.ai.studio.multiChoice.CountryOptions
 import mrhi3.ai.studio.multiChoice.MultiChoiceGame
+import mrhi3.ai.studio.wordscramble.WordScrambleData
+import mrhi3.ai.studio.wordscramble.WordScrambleGame
 
 var theSource: Source? = null
 
@@ -56,6 +54,7 @@ fun readData() {
     sourceScreen(getData())
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun sourceScreen(sources: List<Source>) {
 
@@ -180,7 +179,7 @@ fun sourceScreen(sources: List<Source>) {
                     when (source.cate) {
                         "MultiChoice" -> {
                             Text(
-                                text = "선택지: " + (source.choices?.joinToString(", ") ?: ""),
+                                text = source.choices.toString(),
                                 style = MaterialTheme.typography.bodyMedium
                             )
                             TextButton(
@@ -193,6 +192,7 @@ fun sourceScreen(sources: List<Source>) {
                                 Text(text = stringResource(R.string.action_try))
                             }
                         }
+
                         "WordScramble" -> {
                             Text(
                                 text = "섞인 단어: ${source.q}",
@@ -208,6 +208,7 @@ fun sourceScreen(sources: List<Source>) {
                                 Text(text = stringResource(R.string.action_try))
                             }
                         }
+
                         else -> {
                             Text(
                                 text = "카테고리: ${source.cate}",

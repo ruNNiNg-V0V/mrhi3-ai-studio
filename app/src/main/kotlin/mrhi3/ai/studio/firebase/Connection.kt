@@ -2,6 +2,7 @@ package mrhi3.ai.studio.firebase
 
 import android.content.Context
 import android.content.Intent
+import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
@@ -58,12 +59,12 @@ fun signIn(context: Context) {
 
 // 파이어베이스 불러오기 예시 데이터 클래스
 data class Source(
-    val cate: String = "",
-    val id: String = "",
-    val q: String = "",
-    val k: String = "",
-    val choices: List<String>? = null,
-    val hints: List<String>? = null
+    val cate: String,
+    val id: String,
+    val q: String,
+    val k: String,
+    val choices: List<String>? = listOf(),
+    val hints: List<String>? = listOf()
 )
 
 val gson = Gson()
@@ -83,7 +84,6 @@ fun getData(): List<Source> {
             // documents가 초기화 될 때 까지 로딩 나타내기
             val documents = db.collection("games").get().await()
             val sources = documents.map { document ->
-                val id = document.id // document가 json으로 변경되면서 id는 빠짐
                 val json = gson.toJson(document.data) // 받아온 데이터를 json으로 변환
                 val data = gson.fromJson(json, Source::class.java) // json을 Source로 변환
                 // document를 Source로 변환
@@ -92,8 +92,8 @@ fun getData(): List<Source> {
                     id = data.id,
                     q = data.q,
                     k = data.k,
-                    choices = data.choices ?: listOf(),
-                    hints = data.hints ?: listOf()
+                    choices = data.choices?: listOf(),
+                    hints = data.hints?: listOf()
                 )
             }
             if (sources.isNotEmpty()) {
@@ -122,7 +122,6 @@ fun saveMultiChoice(context: Context, gameData: CountryOptions) {
         q = gameData.q,
         k = gameData.k,
         choices = gameData.choices,
-        hints = listOf()
     )
 
     db.collection("games")
@@ -149,9 +148,7 @@ fun saveWordScramble(context: Context, gameData: WordScrambleData) {
         cate = "WordScramble",
         id = "단어 맞추기: ${gameData.CW}", // 또는 다른 식별자 사용
         q = gameData.SW, // 섞인 단어
-        k = gameData.CW, // 정답 단어
-        choices = null, // WordScramble은 선택지 없음
-        hints = null // WordScramble은 힌트 없음
+        k = gameData.CW // 정답 단어
     )
 
     db.collection("games")
@@ -161,6 +158,7 @@ fun saveWordScramble(context: Context, gameData: WordScrambleData) {
             Toast.makeText(context, "게임 데이터 저장 성공!!", Toast.LENGTH_SHORT).show()
         }
         .addOnFailureListener {
+            Log.e("saveWordScramble", "게임 데이터 저장 실패!!", it)
             isLoading = false
             Toast.makeText(context, "게임 데이터 저장 실패!!", Toast.LENGTH_SHORT).show()
         }
