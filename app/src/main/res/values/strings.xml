@@ -75,31 +75,25 @@
     </string>
 
     <!-- Combination sample strings -->
-    <string name="combination_label">Message</string>
-    <string name="combination_send">Send</string>
-    <string name="combination_ex">
-        "Set the topic to "Korean traditional culture."
-Randomly select one from the subcategories: instruments, clothing, food, or play.
-Response format: Include only q, k, c, and h in JSON format, excluding extra explanations, text, newlines (\n), topic, and subcategory.
-Compose a question (q), keyword (k), choices (c), and hints (h) in JSON format corresponding to the selected subcategory.
-The question (q) must be written in the format 'x + y -> z' where z should not contain any equations and x, y, and z must be distinct words.
-For example, in the case of '윷놀이,' x is '판' and y is '조각,' so it becomes '판 + 조각 -> 윷놀이.'
-y is replaced with '?' in the question (q).
-The value of k is the same as the original value of y.
-The choices (c) should include three items, including the value of k.
-For example, in the case of '쌀 + ? -> 김치찌개,' y is '김치.'
-Therefore, the choices (c) should not be ['김치', '고추장', '된장'] because '고추장' and '된장' are related to the topic or 김치찌개.
-Instead, the choices (c) should be ['김치', '바퀴', '책상'] with items unrelated to the topic.
-The values in array c need to be randomly rearranged.
-Ensure that the other two items in the choices (c) do not relate to the topic or z.
-The hints (h) should include three brief characteristics of the value of k, written concisely.
-Each hint (h) should be no longer than ten characters.
-Respond in JSON format.
-The result should be a specific item (z) related to the subcategory.
-Set x and y to specific and consistent items.
-Only include q, k, c, and h in the JSON.
-All answers must be in Korean.
-"
+    <string name="combination_prompt">
+        1. 주제를 "한국 전통 문화"로 설정합니다.
+        2. 답변 예시 {
+              "q": "나물 + ? -> 비빔밥",
+              "k": "고추장",
+              "choices": ["책","마우스","고추장"],
+              "hints": ["빨간색","발효식품","매운맛"]
+            }
+        3. 답변 예시를 보고 [악기, 의복, 음식, 놀이] 중 가장관련있는 것을 g1에 저장하세요.
+        4. g2는 [악기, 의복, 음식, 놀이]에서 g1와 일치하는 단어의 다음 단어로 저장하세요. 예를 들면 g1이 놀이면 g2는 악기입니다.
+        5. p는 g2의 하위 범주에 해당하는 구체적 개념으로된 고유명사 단어로 저장합니다.
+        6. p,ps1,ps2는 서로 다른 단어이고, p를 구성하는 서로다른 두 재료를 각각 ps1, ps2에 저장합니다. (예 사물놀이 -> 북, 꽹과리)
+        7. 질문(q)에는 "ps1 + ? -> p" 형태로 저장하세요.
+        8. 키워드(k)에는 ps2 값을 저장하세요.
+        9. 선택지(choices)에는 k의 값을 포함한 세 개의 항목이며 나머지 두 값은 p와 전혀 관련이 없는 단어여야 합니다.
+        10. 선택지(choices)에 들어있는 값들을 무작위로 배열해야 합니다.
+        11. 힌트(hints)에는 ps2의 값의 세 가지 간단한 특징을 포함하여 각각 10자 이내로 리스트 형식으로 작성해야 합니다.
+        12. 답변은 질문(q), 키워드(k), 선택지(choices), 힌트(hints)를 포함해서 json만 보내세요.
     </string>
+
 
 </resources>

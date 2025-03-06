@@ -1,5 +1,6 @@
 package mrhi3.ai.studio.feature.text
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.ai.client.generativeai.GenerativeModel
@@ -8,6 +9,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import mrhi3.ai.studio.combination.CombinationData
 import mrhi3.ai.studio.multiChoice.CountryOptions
 
 class SummarizeViewModel(
@@ -38,6 +40,46 @@ class SummarizeViewModel(
                     5. 답변은 json만
         """.trimIndent()
 
+
+        val job = viewModelScope.launch {
+            outputContent = ""
+            try {
+                generativeModel.generateContentStream(prompt)
+                    .collect { response ->
+                        outputContent += response.text
+                        _uiState.value = SummarizeUiState.Success(outputContent)
+                    }
+            } catch (e: Exception) {
+                _uiState.value = SummarizeUiState.Error(e.localizedMessage ?: "")
+            }
+        }
+        return job
+    }
+
+    fun getCombinationQize(gameData: CombinationData): Job {
+        _uiState.value = SummarizeUiState.Loading
+
+        val prompt = """
+1. 주제를 "한국 전통 문화"로 설정합니다.
+2. 답변 예시 {
+              "q": "${gameData.q}",
+              "k": "${gameData.k}",
+              "choices": ["${gameData.choices[0]}","${gameData.choices[1]}","${gameData.choices[2]}"],
+              "hints": ["${gameData.hints[0]}","${gameData.hints[1]}","${gameData.hints[2]}"]
+            }
+3. 답변 예시를 보고 음식, 의복, 악기, 놀이 중 가장알맞은 것을 g1에 저장하세요.
+4. g2는 g1(음식) 이면 g2(의복), 의복 -> 악기, 악기 -> 놀이, 놀이 -> 음식과 같이 설정합니다. 
+5. p는 g2의 하위 범주에 해당하는 구체적 개념으로된 고유명사 단어로 저장합니다.
+6. p,ps1,ps2는 서로 다른 단어이고, p를 구성하는 주된 재료 또는 핵심 요소를 각각 ps1, ps2에 저장합니다 (예 사물놀이 -> 북, 꽹과리)
+7. 질문(q)에는 'ps1 + ? -> p' 형태로 저장하며, 답변 예시와 같을 수 없습니다. 
+8. 키워드(k)에는 ps2 값을 저장하세요.
+9. 선택지(choices)에는 3개의 값입니다. k의 값을 포함한 세 개의 항목이며 나머지 두 값은 p와 전혀 관련이 없는 단어여야 합니다.
+10. 선택지(choices)에 들어있는 값들을 무작위로 배열해야 합니다.
+11. 힌트(hints)에는 ps2의 값의 세 가지 간단한 특징을 포함하여 각각 10자 이내로 리스트 형식으로 작성해야 합니다.
+12. 답변은 질문(q), 키워드(k), 선택지(choices), 힌트(hints)를 포함해서 json만 보내세요.
+        """.trimIndent()
+        Log.d("getCombinationQize", "${gameData.choices}")
+        Log.d("getCombinationQize", "${gameData.hints}")
 
         val job = viewModelScope.launch {
             outputContent = ""

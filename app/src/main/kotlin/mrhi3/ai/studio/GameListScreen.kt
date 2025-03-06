@@ -50,6 +50,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import mrhi3.ai.studio.combination.CombinationData
+import mrhi3.ai.studio.combination.CombinationGame
 import mrhi3.ai.studio.firebase.Source
 import mrhi3.ai.studio.firebase.getData
 import mrhi3.ai.studio.multiChoice.CountryOptions
@@ -92,6 +94,19 @@ fun sourceScreen(sources: List<Source>) {
                 q = gameSource!!.q,
                 k = gameSource.k,
                 choices = gameSource.choices!!
+            )
+        )
+    }
+
+    var isCombination by remember { mutableStateOf(false) }
+    if (isCombination) {
+        val gameSource = getSource()
+        CombinationGame("GameList",
+            CombinationData(
+                q = gameSource!!.q,
+                k = gameSource.k,
+                choices = gameSource.choices!!,
+                hints = gameSource.hints!!
             )
         )
     }
@@ -179,6 +194,25 @@ fun sourceScreen(sources: List<Source>) {
                             onClick = {
                                 saveSource(source)
                                 isMultiChoice = true
+                            },
+                            modifier = Modifier.align(Alignment.End)
+                        ) {
+                            Text(text = stringResource(R.string.action_try))
+                        }
+                    }
+                    if (source.cate == "Combination") {
+                        Text(
+                            text = source.id,
+                            style = MaterialTheme.typography.titleMedium
+                        )
+                        Text(
+                            text = source.choices.toString(),
+                            style = MaterialTheme.typography.titleMedium
+                        )
+                        TextButton(
+                            onClick = {
+                                saveSource(source)
+                                isCombination = true
                             },
                             modifier = Modifier.align(Alignment.End)
                         ) {

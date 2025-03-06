@@ -22,7 +22,6 @@ import androidx.lifecycle.viewmodel.CreationExtras
 import com.google.ai.client.generativeai.GenerativeModel
 import com.google.ai.client.generativeai.type.generationConfig
 import mrhi3.ai.studio.feature.chat.ChatViewModel
-import mrhi3.ai.studio.feature.combination.CombinationViewModel
 import mrhi3.ai.studio.feature.multimodal.PhotoReasoningViewModel
 import mrhi3.ai.studio.feature.text.SummarizeViewModel
 
@@ -66,16 +65,6 @@ val GenerativeViewModelFactory = object : ViewModelProvider.Factory {
                         generationConfig = config
                     )
                     ChatViewModel(generativeModel)
-                }
-
-                isAssignableFrom(CombinationViewModel::class.java) -> {
-                    // Initialize a GenerativeModel with the `gemini-flash` AI model for chat
-                    val generativeModel = GenerativeModel(
-                        modelName = "gemini-2.0-flash-lite",
-                        apiKey = BuildConfig.apiKey,
-                        generationConfig = config
-                    )
-                    CombinationViewModel(generativeModel)
                 }
 
                 else ->

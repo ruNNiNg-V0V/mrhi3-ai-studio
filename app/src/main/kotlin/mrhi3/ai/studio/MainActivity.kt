@@ -30,6 +30,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import mrhi3.ai.studio.combination.CombinationGame
 import mrhi3.ai.studio.multiChoice.MultiChoiceGame
 import mrhi3.ai.studio.ui.theme.GenerativeAISample
 import mrhi3.ai.studio.ui.theme.setTopAppBar
@@ -64,6 +65,9 @@ class MainActivity : ComponentActivity() {
                             }
                             composable("MultiChoice") {
                                 MultiChoiceGame("Main")
+                            }
+                            composable("Combination") {
+                                CombinationGame("Main")
                             }
                         }
                     }

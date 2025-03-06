@@ -21,6 +21,7 @@ import com.google.gson.Gson
 import kotlinx.coroutines.tasks.await
 import mrhi3.ai.studio.GameListActivity
 import mrhi3.ai.studio.R
+import mrhi3.ai.studio.combination.CombinationData
 import mrhi3.ai.studio.multiChoice.CountryOptions
 
 @Composable
@@ -131,6 +132,43 @@ fun saveMultiChoice(context: Context, gameData: CountryOptions) {
         k = gameData.k,
         choices = gameData.choices,
         hints = listOf()
+    )
+
+    db.collection("games")
+        .add(data)
+        .addOnSuccessListener {
+            isLoading = false
+            Toast.makeText(context, "게임 데이터 저장 성공!!", Toast.LENGTH_SHORT).show()
+        }
+        .addOnFailureListener {
+            isLoading = false
+            Toast.makeText(context, "게임 데이터 저장 실패!!", Toast.LENGTH_SHORT).show()
+        }
+}
+
+@Composable
+fun saveCombination(context: Context, comGameData: CombinationData) {
+
+    // 응답을 기다리는 동안 로딩 표시
+    var isLoading by remember { mutableStateOf(true) }
+    showLoading(isLoading)
+
+    val db = FirebaseFirestore.getInstance()
+
+    /**
+     * TODO
+     *  게임이 구현되면 data 수정
+     *  게임별 json을 받을 수 있는 하나의 data class 추가
+     *  getData()에서 불러 올 데이터 new -> games 수정할 것
+     */
+
+    val data = Source(
+        cate = "Combination",
+        id = comGameData.q,
+        q = comGameData.q,
+        k = comGameData.k,
+        choices = comGameData.choices,
+        hints = comGameData.hints
     )
 
     db.collection("games")
