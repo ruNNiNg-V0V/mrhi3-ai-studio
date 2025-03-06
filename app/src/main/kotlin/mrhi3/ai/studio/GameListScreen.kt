@@ -1,5 +1,6 @@
 package mrhi3.ai.studio
 
+import MatchingGame
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -72,6 +73,7 @@ fun sourceScreen(sources: List<Source>) {
     // 게임 화면 보여주기 상태
     var isMultiChoice by remember { mutableStateOf(false) }
     var isWordScramble by remember { mutableStateOf(false) }
+    var isMatchingCards by remember { mutableStateOf(false) }
 
     if (isMultiChoice) {
         val gameSource = getSource()
@@ -79,8 +81,8 @@ fun sourceScreen(sources: List<Source>) {
             MultiChoiceGame(
                 "GameList",
                 CountryOptions(
-                    q = gameSource.q,
-                    k = gameSource.k,
+                    q = gameSource.q!!,
+                    k = gameSource.k!!,
                     choices = gameSource.choices ?: listOf()
                 )
             )
@@ -94,13 +96,24 @@ fun sourceScreen(sources: List<Source>) {
             WordScrambleGame(
                 mode = "GameList",
                 gameSource = WordScrambleData(
-                    SW = gameSource.q,
-                    CW = gameSource.k
+                    SW = gameSource.q!!,
+                    CW = gameSource.k!!
                 )
             )
         }
         return
     }
+
+    if(isMatchingCards){
+        val gameSource = getSource()
+        if (gameSource != null) {
+            MatchingGame(
+                mode = "GameList",
+                gameSource = gameSource.cards!!
+            )
+        }
+    }
+
 
     Row(
         verticalAlignment = Alignment.CenterVertically,
@@ -172,7 +185,7 @@ fun sourceScreen(sources: List<Source>) {
                         .fillMaxWidth()
                 ) {
                     Text(
-                        text = source.id,
+                        text = source.id!!,
                         style = MaterialTheme.typography.titleMedium
                     )
 
@@ -202,6 +215,22 @@ fun sourceScreen(sources: List<Source>) {
                                 onClick = {
                                     saveSource(source)
                                     isWordScramble = true
+                                },
+                                modifier = Modifier.align(Alignment.End)
+                            ) {
+                                Text(text = stringResource(R.string.action_try))
+                            }
+                        }
+
+                        "MatchingCards" -> {
+                            Text(
+                                text = "카드 맞추기",
+                                style = MaterialTheme.typography.bodyMedium
+                            )
+                            TextButton(
+                                onClick = {
+                                    saveSource(source)
+                                    isMatchingCards = true
                                 },
                                 modifier = Modifier.align(Alignment.End)
                             ) {

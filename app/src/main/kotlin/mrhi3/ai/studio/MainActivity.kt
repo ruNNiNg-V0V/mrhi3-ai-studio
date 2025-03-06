@@ -16,6 +16,7 @@
 
 package mrhi3.ai.studio
 
+import MatchingGame
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.OnBackPressedCallback
@@ -69,6 +70,11 @@ class MainActivity : ComponentActivity() {
                             composable("WordScramble") {
                                 WordScrambleGame("Main")
                             }
+
+                            composable("MatchingCards") {
+                                MatchingGame("Main")
+                            }
+
                         }
                     }
                 }

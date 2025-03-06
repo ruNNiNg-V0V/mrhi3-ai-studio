@@ -1,5 +1,6 @@
 package mrhi3.ai.studio.firebase
 
+import MatchingCards
 import android.content.Context
 import android.content.Intent
 import android.util.Log
@@ -60,11 +61,12 @@ fun signIn(context: Context) {
 // 파이어베이스 불러오기 예시 데이터 클래스
 data class Source(
     val cate: String,
-    val id: String,
-    val q: String,
-    val k: String,
+    val id: String? = "",
+    val q: String? ="",
+    val k: String? ="",
     val choices: List<String>? = listOf(),
-    val hints: List<String>? = listOf()
+    val hints: List<String>? = listOf(),
+    val cards:MatchingCards? = null
 )
 
 val gson = Gson()
@@ -93,7 +95,8 @@ fun getData(): List<Source> {
                     q = data.q,
                     k = data.k,
                     choices = data.choices?: listOf(),
-                    hints = data.hints?: listOf()
+                    hints = data.hints?: listOf(),
+                    cards = data.cards?:null
                 )
             }
             if (sources.isNotEmpty()) {
@@ -159,6 +162,33 @@ fun saveWordScramble(context: Context, gameData: WordScrambleData) {
         }
         .addOnFailureListener {
             Log.e("saveWordScramble", "게임 데이터 저장 실패!!", it)
+            isLoading = false
+            Toast.makeText(context, "게임 데이터 저장 실패!!", Toast.LENGTH_SHORT).show()
+        }
+}
+
+
+
+@Composable
+fun saveMatchingCards(context: Context, dataSource : MatchingCards) {
+    // 응답을 기다리는 동안 로딩 표시
+    var isLoading by remember { mutableStateOf(true) }
+    showLoading(isLoading)
+
+    val db = FirebaseFirestore.getInstance()
+
+    val data = Source(
+        cate = "MatchingCards",
+        cards = dataSource
+    )
+
+    db.collection("games")
+        .add(data)
+        .addOnSuccessListener {
+            isLoading = false
+            Toast.makeText(context, "게임 데이터 저장 성공!!", Toast.LENGTH_SHORT).show()
+        }
+        .addOnFailureListener {
             isLoading = false
             Toast.makeText(context, "게임 데이터 저장 실패!!", Toast.LENGTH_SHORT).show()
         }
