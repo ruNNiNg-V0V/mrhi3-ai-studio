@@ -15,4 +15,9 @@
 -->
 <resources>
     <style name="Theme.EmptyThing" parent="android:Theme.Material.Light.NoActionBar" />
+    <style name="Theme.App.Starting" parent="Theme.SplashScreen">
+        <item name="windowSplashScreenAnimatedIcon">@drawable/ai4gameslogo</item>
+        <item name="windowSplashScreenBackground">@color/white</item>
+        <item name="postSplashScreenTheme">@style/Theme.EmptyThing</item>
+    </style>
 </resources>

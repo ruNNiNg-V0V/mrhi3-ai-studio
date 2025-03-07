@@ -28,6 +28,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
@@ -40,6 +41,7 @@ import mrhi3.ai.studio.wordscramble.WordScrambleGame
 class MainActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        installSplashScreen()
         super.onCreate(savedInstanceState)
         setContent {
             // 테마
@@ -70,7 +72,6 @@ class MainActivity : ComponentActivity() {
                             composable("WordScramble") {
                                 WordScrambleGame("Main")
                             }
-
                             composable("MatchingCards") {
                                 MatchingGame("Main")
                             }

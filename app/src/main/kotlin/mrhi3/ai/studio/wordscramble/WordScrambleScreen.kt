@@ -304,7 +304,7 @@ fun WordScrambleGame(
                         .fillMaxWidth()
                         .padding(bottom = 24.dp),
                     shape = RoundedCornerShape(12.dp),
-                    colors = CardDefaults.cardColors(containerColor = Color(0xFFE0F7FA))
+                    colors = CardDefaults.cardColors(containerColor = Color(0xFF9B7EBD))
                 ) {
                     Column(
                         modifier = Modifier

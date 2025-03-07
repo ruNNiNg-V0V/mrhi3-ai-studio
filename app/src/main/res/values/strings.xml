@@ -103,7 +103,6 @@ All answers must be in Korean.
     </string>
 
 
-
     <string name="word_scramble_prompt">
 Generate a word scramble game data in JSON format with two fields:
         1. CW (Correct Word): the original word that players need to guess

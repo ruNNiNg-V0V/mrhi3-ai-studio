@@ -19,13 +19,22 @@ import mrhi3.ai.studio.MainActivity
 import mrhi3.ai.studio.R
 import mrhi3.ai.studio.firebase.auth
 import mrhi3.ai.studio.firebase.signIn
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.ui.Modifier
 
 @Composable
 fun setTopAppBar(mode: String) {
     val context = LocalContext.current
     val appName = context.getString(R.string.app_name)
     TopAppBar(
-        title = { Text(appName) },
+        title = {
+            Image(
+                painter = painterResource(id = R.drawable.ai4gameslogo2),
+                contentDescription = context.getString(R.string.app_name),
+                modifier = Modifier.fillMaxHeight(0.7f)  // 로고 높이 조정
+            )
+        },
         navigationIcon = {
             if (mode != "Main") {
                 IconButton(onClick = {
