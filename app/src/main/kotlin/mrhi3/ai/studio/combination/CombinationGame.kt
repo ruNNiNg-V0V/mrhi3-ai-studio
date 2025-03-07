@@ -19,7 +19,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -58,7 +57,7 @@ import mrhi3.ai.studio.readData
 data class CombinationData (
     val q: String = "윷 + ? -> 윷놀이",
     val k: String = "말",
-    val choices: List<String> = listOf("의자", "연필", "말"),
+    var choices: List<String> = listOf("의자", "연필", "말"),
     val hints: List<String> = listOf("4개 존재", "놀이 도구", "움직임")
 )
 
@@ -116,6 +115,8 @@ fun CombinationGame(mode: String, gameSource: CombinationData = CombinationData(
 
                     val gson = Gson()
                     comGameData = gson.fromJson(cleanedJsonString, CombinationData::class.java)
+
+                    comGameData.choices = comGameData.choices.shuffled()
                     Log.d("ParsedData", comGameData.toString())
                     buttonColors = (listOf(Color(0xFF80CBC4), Color(0xFF80CBC4), Color(0xFF80CBC4)))
                 }
@@ -156,6 +157,8 @@ fun CombinationGame(mode: String, gameSource: CombinationData = CombinationData(
 
                     val gson = Gson()
                     comGameData = gson.fromJson(cleanedJsonString, CombinationData::class.java)
+
+                    comGameData.choices = comGameData.choices.shuffled()
                     Log.d("ParsedData", comGameData.toString())
                     buttonColors = (listOf(Color(0xFF80CBC4), Color(0xFF80CBC4), Color(0xFF80CBC4)))
                 }
@@ -253,7 +256,7 @@ fun CombinationGame(mode: String, gameSource: CombinationData = CombinationData(
                 .fillMaxWidth()
                 .padding(top = 16.dp, bottom = 8.dp)
                 .background(
-                    color = Color(0xFFFFFF),
+                    color = Color(0xFFFFFFFF),
                     shape = RoundedCornerShape(8.dp)
                 )
 
@@ -451,6 +454,6 @@ fun ButtonCard(answer: String, text: String, onClick: () -> Unit, backgroundColo
 
 @Preview
 @Composable
-fun previewer() {
+fun Previewer() {
     CombinationGame(mode = "Main", CombinationData())
 }
