@@ -1,5 +1,6 @@
 import android.content.Intent
 import android.util.Log
+import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -223,7 +224,7 @@ fun MatchingGame(mode: String, gameSource: MatchingCards = MatchingCards()) {
     }
 
     if (gameData.all { it.removed }) {
-        Text("Game Cleared!")
+        Toast.makeText(context, "GameClear!!", Toast.LENGTH_SHORT).show()
     }
 
     Column(
@@ -400,24 +401,24 @@ fun CardItem(
             .size(112.dp)
             .clickable { onClick() }
             .background(
-                color = if (card.removed) Color.Gray else Color(0xFF5D9CEC),
-                shape = RoundedCornerShape(16.dp)
+                color = if (card.removed) MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f) else MaterialTheme.colorScheme.secondary,
+                shape = RoundedCornerShape(12.dp)
             ),
         contentAlignment = Alignment.Center
     ) {
         Box(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(8.dp) // 내부 여백 추가
+                .padding(8.dp)
                 .background(
-                    color = if (isSelected || card.removed || card.revealed) Color(0xFF5D9CEC) else Color.White,
-                    shape = RoundedCornerShape(16.dp)
+                    color = if (isSelected || card.removed || card.revealed) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.surface,
+                    shape = RoundedCornerShape(12.dp)
                 )
         ) {
             Text(
                 text = if (isSelected || card.removed || card.revealed) card.label else "?",
-                color = Color(0xFFE6E9ED),
-                fontSize = 24.sp,
+                color = if (isSelected || card.removed || card.revealed) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onSurface,
+                fontSize = 20.sp,
                 fontWeight = FontWeight.Bold,
                 modifier = Modifier.align(Alignment.Center)
             )
