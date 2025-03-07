@@ -44,6 +44,7 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.Navigation
 import com.google.gson.Gson
+import mrhi3.ai.studio.GameListActivity
 import mrhi3.ai.studio.GenerativeViewModelFactory
 import mrhi3.ai.studio.MainActivity
 import mrhi3.ai.studio.feature.text.SummarizeUiState
@@ -205,7 +206,8 @@ fun MultiChoiceGame(mode: String, gameSource: CountryOptions = CountryOptions())
             }
 
             else -> {
-                readData()
+                val intent = Intent(context, GameListActivity::class.java)
+                context.startActivity(intent)
             }
         }
     }

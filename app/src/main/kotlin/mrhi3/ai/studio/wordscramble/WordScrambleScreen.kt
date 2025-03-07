@@ -34,6 +34,7 @@ import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.ui.viewinterop.AndroidView
 import kotlinx.coroutines.launch
+import mrhi3.ai.studio.GameListActivity
 
 // 게임 데이터를 담을 데이터 클래스
 data class WordScrambleData(
@@ -197,7 +198,8 @@ fun WordScrambleGame(
                 context.startActivity(intent)
             }
             else -> {
-                readData()
+                val intent = Intent(context, GameListActivity::class.java)
+                context.startActivity(intent)
             }
         }
     }

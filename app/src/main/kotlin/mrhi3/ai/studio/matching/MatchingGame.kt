@@ -43,6 +43,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.google.gson.Gson
+import mrhi3.ai.studio.GameListActivity
 import mrhi3.ai.studio.GenerativeViewModelFactory
 import mrhi3.ai.studio.MainActivity
 import mrhi3.ai.studio.feature.text.SummarizeUiState
@@ -211,7 +212,8 @@ fun MatchingGame(mode: String, gameSource: MatchingCards = MatchingCards()) {
             }
 
             else -> {
-                readData()
+                val intent = Intent(context, GameListActivity::class.java)
+                context.startActivity(intent)
             }
         }
     }

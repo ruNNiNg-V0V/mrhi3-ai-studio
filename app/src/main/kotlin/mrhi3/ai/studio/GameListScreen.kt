@@ -18,17 +18,28 @@
 
 package mrhi3.ai.studio
 
+import MatchingCards
+import MatchingGame
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Refresh
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -47,15 +58,22 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import mrhi3.ai.studio.combination.CombinationData
 import mrhi3.ai.studio.combination.CombinationGame
 import mrhi3.ai.studio.firebase.Source
 import mrhi3.ai.studio.firebase.getData
 import mrhi3.ai.studio.multiChoice.CountryOptions
 import mrhi3.ai.studio.multiChoice.MultiChoiceGame
+import mrhi3.ai.studio.wordscramble.WordScrambleData
+import mrhi3.ai.studio.wordscramble.WordScrambleGame
 
 var theSource: Source? = null
 
@@ -72,6 +90,7 @@ fun readData() {
     sourceScreen(getData())
 }
 
+
 @Composable
 fun sourceScreen(sources: List<Source>) {
 
@@ -86,25 +105,65 @@ fun sourceScreen(sources: List<Source>) {
         filteredSources = sources
     }
 
+    // 게임 화면 보여주기 상태
     var isMultiChoice by remember { mutableStateOf(false) }
+    var isWordScramble by remember { mutableStateOf(false) }
+    var isMatchingCards by remember { mutableStateOf(false) }
+
     if (isMultiChoice) {
         val gameSource = getSource()
-        MultiChoiceGame("GameList",
-            CountryOptions(
-                q = gameSource!!.q,
-                k = gameSource.k,
-                choices = gameSource.choices!!
+        if (gameSource != null) {
+            MultiChoiceGame(
+                "GameList",
+                CountryOptions(
+                    q = gameSource.q!!,
+                    k = gameSource.k!!,
+                    choices = gameSource.choices ?: listOf()
+                )
             )
-        )
+        }
+        return
+    }
+
+    if (isWordScramble) {
+        val gameSource = getSource()
+        if (gameSource != null) {
+            WordScrambleGame(
+                mode = "GameList",
+                gameSource = WordScrambleData(
+                    SW = gameSource.q!!,
+                    CW = gameSource.k!!
+                )
+            )
+        }
+        return
+    }
+
+    if (isMatchingCards) {
+        val gameSource = getSource()
+        if (gameSource != null) {
+            MatchingGame(
+                mode = "GameList",
+                gameSource = MatchingCards(
+                    gameSource.a!!,
+                    gameSource.b!!,
+                    gameSource.c!!,
+                    gameSource.d!!,
+                    gameSource.e!!,
+                    gameSource.f!!
+                )
+            )
+        }
     }
 
     var isCombination by remember { mutableStateOf(false) }
     if (isCombination) {
         val gameSource = getSource()
-        CombinationGame("GameList",
+        CombinationGame(
+            "GameList",
             CombinationData(
-                q = gameSource!!.q,
-                k = gameSource.k,
+                q = gameSource!!.q!!,
+                k = gameSource!!.k!!,
                 choices = gameSource.choices!!,
                 hints = gameSource.hints!!
             )
@@ -175,44 +234,320 @@ fun sourceScreen(sources: List<Source>) {
                     .fillMaxWidth()
                     .padding(horizontal = 16.dp, vertical = 8.dp)
             ) {
-                Column(
-                    modifier = Modifier
-                        .padding(all = 16.dp)
-                        .fillMaxWidth()
-                ) {
 
-                    if (source.cate == "MultiChoice") {
-                        Text(
-                            text = source.id,
-                            style = MaterialTheme.typography.titleMedium
-                        )
-                        Text(
-                            text = source.choices.toString(),
-                            style = MaterialTheme.typography.titleMedium
-                        )
-                        TextButton(
-                            onClick = {
-                                saveSource(source)
-                                isMultiChoice = true
-                            },
-                            modifier = Modifier.align(Alignment.End)
+
+                val menuItem = menuItems.find { it.routeId == source.cate }
+
+                when (source.cate) {
+                    "MultiChoice" -> {
+
+                        // 제목 부분
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .background(menuItem!!.headerColor)
+                                .padding(16.dp)
                         ) {
-                            Text(text = stringResource(R.string.action_try))
+                            Text(
+                                text = stringResource(menuItem.titleResId),
+                                style = MaterialTheme.typography.titleLarge,
+                                fontWeight = FontWeight.Bold,
+                                color = Color.White,
+                                fontSize = 22.sp
+                            )
+                        }
+
+                        // 설명과 썸네일
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(16.dp),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            // 게임 썸네일
+                            Box(
+                                modifier = Modifier
+                                    .size(80.dp)
+                                    .clip(RoundedCornerShape(8.dp))  // 모서리를 둥글게 만들고 싶다면 유지
+                                    .background(Color.LightGray),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                Image(
+                                    painter = painterResource(id = menuItem.iconResId),
+                                    contentDescription = stringResource(menuItem.titleResId),
+                                    modifier = Modifier
+                                        .fillMaxSize()
+                                )
+                            }
+                            Spacer(modifier = Modifier.width(16.dp))
+
+                            // 게임 설명
+                            Column(
+                                modifier = Modifier.weight(1f)
+                            ) {
+
+                                Text(
+                                    text = source.id!!,
+                                    style = MaterialTheme.typography.bodyMedium,
+                                    modifier = Modifier.padding(bottom = 8.dp)
+
+                                )
+
+                                // 버튼 스타일링
+                                Button(
+                                    onClick = {
+                                        saveSource(source)
+                                        isMultiChoice = true
+                                    },
+                                    modifier = Modifier.align(Alignment.End),
+                                    colors = ButtonDefaults.buttonColors(
+                                        containerColor = menuItem.headerColor,
+                                        contentColor = Color.White
+                                    ),
+                                    shape = RoundedCornerShape(8.dp)
+                                ) {
+                                    Text(
+                                        text = stringResource(R.string.action_try),
+                                        fontWeight = FontWeight.Bold
+                                    )
+                                }
+                            }
                         }
                     }
-                    if (source.cate == "Combination") {
+
+                    "WordScramble" -> {
+
+                        // 제목 부분
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .background(menuItem!!.headerColor)
+                                .padding(16.dp)
+                        ) {
+                            Text(
+                                text = stringResource(menuItem.titleResId),
+                                style = MaterialTheme.typography.titleLarge,
+                                fontWeight = FontWeight.Bold,
+                                color = Color.White,
+                                fontSize = 22.sp
+                            )
+                        }
+
+                        // 설명과 썸네일
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(16.dp),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            // 게임 썸네일
+                            Box(
+                                modifier = Modifier
+                                    .size(80.dp)
+                                    .clip(RoundedCornerShape(8.dp))  // 모서리를 둥글게 만들고 싶다면 유지
+                                    .background(Color.LightGray),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                Image(
+                                    painter = painterResource(id = menuItem.iconResId),
+                                    contentDescription = stringResource(menuItem.titleResId),
+                                    modifier = Modifier
+                                        .fillMaxSize()
+                                )
+                            }
+                            Spacer(modifier = Modifier.width(16.dp))
+
+                            // 게임 설명
+                            Column(
+                                modifier = Modifier.weight(1f)
+                            ) {
+
+                                Text(
+                                    text = "섞인 단어: ${source.q}",
+                                    style = MaterialTheme.typography.bodyMedium,
+                                    modifier = Modifier.padding(bottom = 8.dp)
+                                )
+
+                                // 버튼 스타일링
+                                Button(
+                                    onClick = {
+                                        saveSource(source)
+                                        isWordScramble = true
+                                    },
+                                    modifier = Modifier.align(Alignment.End),
+                                    colors = ButtonDefaults.buttonColors(
+                                        containerColor = menuItem.headerColor,
+                                        contentColor = Color.White
+                                    ),
+                                    shape = RoundedCornerShape(8.dp)
+                                ) {
+                                    Text(
+                                        text = stringResource(R.string.action_try),
+                                        fontWeight = FontWeight.Bold
+                                    )
+                                }
+                            }
+                        }
+                    }
+
+                    "MatchingCards" -> {
+                        // 제목 부분
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .background(menuItem!!.headerColor)
+                                .padding(16.dp)
+                        ) {
+                            Text(
+                                text = stringResource(menuItem.titleResId),
+                                style = MaterialTheme.typography.titleLarge,
+                                fontWeight = FontWeight.Bold,
+                                color = Color.White,
+                                fontSize = 22.sp
+                            )
+                        }
+
+                        // 설명과 썸네일
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(16.dp),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            // 게임 썸네일
+                            Box(
+                                modifier = Modifier
+                                    .size(80.dp)
+                                    .clip(RoundedCornerShape(8.dp))  // 모서리를 둥글게 만들고 싶다면 유지
+                                    .background(Color.LightGray),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                Image(
+                                    painter = painterResource(id = menuItem.iconResId),
+                                    contentDescription = stringResource(menuItem.titleResId),
+                                    modifier = Modifier
+                                        .fillMaxSize()
+                                )
+                            }
+                            Spacer(modifier = Modifier.width(16.dp))
+
+                            // 게임 설명
+                            Column(
+                                modifier = Modifier.weight(1f)
+                            ) {
+                                Text(
+                                    text = """
+                                    ${source.a},${source.b},${source.c},${source.d},${source.e},${source.f}
+                                    """.trimIndent(),
+                                    style = MaterialTheme.typography.bodySmall,
+                                    modifier = Modifier.padding(bottom = 8.dp)
+                                )
+
+                                // 버튼 스타일링
+                                Button(
+                                    onClick = {
+                                        saveSource(source)
+                                        isMatchingCards = true
+                                    },
+                                    modifier = Modifier.align(Alignment.End),
+                                    colors = ButtonDefaults.buttonColors(
+                                        containerColor = menuItem.headerColor,
+                                        contentColor = Color.White
+                                    ),
+                                    shape = RoundedCornerShape(8.dp)
+                                ) {
+                                    Text(
+                                        text = stringResource(R.string.action_try),
+                                        fontWeight = FontWeight.Bold
+                                    )
+                                }
+                            }
+
+                        }
+                    }
+
+                    "Combination" -> {
+
+                        // 제목 부분
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .background(menuItem!!.headerColor)
+                                .padding(16.dp)
+                        ) {
+                            Text(
+                                text = stringResource(menuItem.titleResId),
+                                style = MaterialTheme.typography.titleLarge,
+                                fontWeight = FontWeight.Bold,
+                                color = Color.White,
+                                fontSize = 22.sp
+                            )
+                        }
+
+                        // 설명과 썸네일
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(16.dp),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            // 게임 썸네일
+                            Box(
+                                modifier = Modifier
+                                    .size(80.dp)
+                                    .clip(RoundedCornerShape(8.dp))  // 모서리를 둥글게 만들고 싶다면 유지
+                                    .background(Color.LightGray),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                Image(
+                                    painter = painterResource(id = menuItem.iconResId),
+                                    contentDescription = stringResource(menuItem.titleResId),
+                                    modifier = Modifier
+                                        .fillMaxSize()
+                                )
+                            }
+                            Spacer(modifier = Modifier.width(16.dp))
+
+                            // 게임 설명
+                            Column(
+                                modifier = Modifier.weight(1f)
+                            ) {
+                                Text(
+                                    text = "섞인 단어: ${source.q}",
+                                    style = MaterialTheme.typography.bodyMedium,
+                                    modifier = Modifier.padding(bottom = 8.dp)
+                                )
+
+                                // 버튼 스타일링
+                                Button(
+                                    onClick = {
+                                        saveSource(source)
+                                        isCombination = true
+                                    },
+                                    modifier = Modifier.align(Alignment.End),
+                                    colors = ButtonDefaults.buttonColors(
+                                        containerColor = menuItem.headerColor,
+                                        contentColor = Color.White
+                                    ),
+                                    shape = RoundedCornerShape(8.dp)
+                                ) {
+                                    Text(
+                                        text = stringResource(R.string.action_try),
+                                        fontWeight = FontWeight.Bold
+                                    )
+                                }
+                            }
+                        }
+                    }
+
+                    else -> {
                         Text(
-                            text = source.id,
-                            style = MaterialTheme.typography.titleMedium
-                        )
-                        Text(
-                            text = source.choices.toString(),
-                            style = MaterialTheme.typography.titleMedium
+                            text = "카테고리: ${source.cate}",
+                            style = MaterialTheme.typography.bodyMedium
                         )
                         TextButton(
                             onClick = {
-                                saveSource(source)
-                                isCombination = true
+                                // 다른 게임 유형 처리
                             },
                             modifier = Modifier.align(Alignment.End)
                         ) {
@@ -222,6 +557,7 @@ fun sourceScreen(sources: List<Source>) {
                 }
             }
         }
+
     }
 }
 

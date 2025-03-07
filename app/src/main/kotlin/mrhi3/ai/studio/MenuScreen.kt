@@ -84,7 +84,7 @@ val menuItems = listOf(
         "MatchingCards",
         R.string.menu_MatchingCards_title,
         R.string.menu_MatchingCards_description,
-        R.drawable.firebase_full_color,
+        R.drawable.game4,
         Color(0xFF433878)
     )
 )
@@ -179,10 +179,4 @@ fun MenuScreen(
             }
         }
     }
-}
-
-@Preview(showSystemUi = true)
-@Composable
-fun MenuScreenPreview() {
-    MenuScreen()
 }

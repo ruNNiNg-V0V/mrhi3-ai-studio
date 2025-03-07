@@ -32,6 +32,7 @@ import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import mrhi3.ai.studio.combination.CombinationGame
 import mrhi3.ai.studio.multiChoice.MultiChoiceGame
 import mrhi3.ai.studio.ui.theme.GenerativeAISample
 import mrhi3.ai.studio.ui.theme.setTopAppBar
@@ -72,10 +73,12 @@ class MainActivity : ComponentActivity() {
                             composable("WordScramble") {
                                 WordScrambleGame("Main")
                             }
+                            composable("Combination") {
+                                CombinationGame("Main")
+                            }
                             composable("MatchingCards") {
                                 MatchingGame("Main")
                             }
-
                         }
                     }
                 }
