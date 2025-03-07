@@ -60,16 +60,16 @@ data class Card(
 )
 
 data class MatchingCards(
-    val A: List<String> = listOf("강원도","감자"),
-    val B: List<String> = listOf("전라도","김치"),
-    val C: List<String> = listOf("경상도","사과"),
-    val D: List<String> = listOf("충청도","딸기"),
-    val E: List<String> = listOf("경기도","한우"),
-    val F: List<String> = listOf("제주도","감귤")
+    val a: List<String> = listOf("강원도", "감자"),
+    val b: List<String> = listOf("전라도", "김치"),
+    val c: List<String> = listOf("경상도", "사과"),
+    val d: List<String> = listOf("충청도", "딸기"),
+    val e: List<String> = listOf("경기도", "한우"),
+    val f: List<String> = listOf("제주도", "감귤")
 )
 
 @Composable
-fun MatchingGame(mode:String,gameSource: MatchingCards = MatchingCards()) {
+fun MatchingGame(mode: String, gameSource: MatchingCards = MatchingCards()) {
 
     val context = LocalContext.current
 
@@ -81,12 +81,12 @@ fun MatchingGame(mode:String,gameSource: MatchingCards = MatchingCards()) {
 
     // MatchingCards의 각 속성에 접근하여 처리
     dataSource.run {
-        A.forEach { value -> cards.add(Card(value = "A", label = value)) }
-        B.forEach { value -> cards.add(Card(value = "B", label = value)) }
-        C.forEach { value -> cards.add(Card(value = "C", label = value)) }
-        D.forEach { value -> cards.add(Card(value = "D", label = value)) }
-        E.forEach { value -> cards.add(Card(value = "E", label = value)) }
-        F.forEach { value -> cards.add(Card(value = "F", label = value)) }
+        a.forEach { value -> cards.add(Card(value = "a", label = value)) }
+        b.forEach { value -> cards.add(Card(value = "b", label = value)) }
+        c.forEach { value -> cards.add(Card(value = "c", label = value)) }
+        d.forEach { value -> cards.add(Card(value = "d", label = value)) }
+        e.forEach { value -> cards.add(Card(value = "e", label = value)) }
+        f.forEach { value -> cards.add(Card(value = "f", label = value)) }
     }
 
     var gameData by remember { mutableStateOf(cards.shuffled()) }
@@ -126,12 +126,12 @@ fun MatchingGame(mode:String,gameSource: MatchingCards = MatchingCards()) {
                     // MatchingCards의 각 속성에 접근하여 처리
 
                     parsedMap.run {
-                        A.forEach { value -> cards.add(Card(value = "A", label = value)) }
-                        B.forEach { value -> cards.add(Card(value = "B", label = value)) }
-                        C.forEach { value -> cards.add(Card(value = "C", label = value)) }
-                        D.forEach { value -> cards.add(Card(value = "D", label = value)) }
-                        E.forEach { value -> cards.add(Card(value = "E", label = value)) }
-                        F.forEach { value -> cards.add(Card(value = "F", label = value)) }
+                        a.forEach { value -> cards.add(Card(value = "a", label = value)) }
+                        b.forEach { value -> cards.add(Card(value = "b", label = value)) }
+                        c.forEach { value -> cards.add(Card(value = "c", label = value)) }
+                        d.forEach { value -> cards.add(Card(value = "d", label = value)) }
+                        e.forEach { value -> cards.add(Card(value = "e", label = value)) }
+                        f.forEach { value -> cards.add(Card(value = "f", label = value)) }
                     }
                     gameData = cards.shuffled()
                     Log.d("MatchingGameDebug", "Cleaned JSON: $rawJson")
@@ -172,12 +172,12 @@ fun MatchingGame(mode:String,gameSource: MatchingCards = MatchingCards()) {
                     // MatchingCards의 각 속성에 접근하여 처리
 
                     parsedMap.run {
-                        A.forEach { value -> cards.add(Card(value = "A", label = value)) }
-                        B.forEach { value -> cards.add(Card(value = "B", label = value)) }
-                        C.forEach { value -> cards.add(Card(value = "C", label = value)) }
-                        D.forEach { value -> cards.add(Card(value = "D", label = value)) }
-                        E.forEach { value -> cards.add(Card(value = "E", label = value)) }
-                        F.forEach { value -> cards.add(Card(value = "F", label = value)) }
+                        a.forEach { value -> cards.add(Card(value = "a", label = value)) }
+                        b.forEach { value -> cards.add(Card(value = "b", label = value)) }
+                        c.forEach { value -> cards.add(Card(value = "c", label = value)) }
+                        d.forEach { value -> cards.add(Card(value = "d", label = value)) }
+                        e.forEach { value -> cards.add(Card(value = "e", label = value)) }
+                        f.forEach { value -> cards.add(Card(value = "f", label = value)) }
                     }
                     gameData = cards.shuffled()
                     Log.d("MatchingGameDebug", "Cleaned JSON: $rawJson")
@@ -240,7 +240,7 @@ fun MatchingGame(mode:String,gameSource: MatchingCards = MatchingCards()) {
                 )
         ) {
             IconButton(
-                onClick = {},
+                onClick = { haveToBack = true },
                 modifier = Modifier
                     .align(Alignment.CenterStart)
                     .padding(8.dp)

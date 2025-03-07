@@ -66,7 +66,12 @@ data class Source(
     val k: String? ="",
     val choices: List<String>? = listOf(),
     val hints: List<String>? = listOf(),
-    val cards:MatchingCards? = null
+    val a:List<String>? = listOf(),
+    val b:List<String>? = listOf(),
+    val c:List<String>? = listOf(),
+    val d:List<String>? = listOf(),
+    val e:List<String>? = listOf(),
+    val f:List<String>? = listOf()
 )
 
 val gson = Gson()
@@ -96,7 +101,12 @@ fun getData(): List<Source> {
                     k = data.k,
                     choices = data.choices?: listOf(),
                     hints = data.hints?: listOf(),
-                    cards = data.cards?:null
+                    a = data.a?: listOf(),
+                    b = data.b?: listOf(),
+                    c = data.c?: listOf(),
+                    d = data.d?: listOf(),
+                    e = data.e?: listOf(),
+                    f = data.f?: listOf()
                 )
             }
             if (sources.isNotEmpty()) {
@@ -179,7 +189,12 @@ fun saveMatchingCards(context: Context, dataSource : MatchingCards) {
 
     val data = Source(
         cate = "MatchingCards",
-        cards = dataSource
+        a = dataSource.a,
+        b = dataSource.b,
+        c = dataSource.c,
+        d = dataSource.d,
+        e = dataSource.e,
+        f = dataSource.f
     )
 
     db.collection("games")

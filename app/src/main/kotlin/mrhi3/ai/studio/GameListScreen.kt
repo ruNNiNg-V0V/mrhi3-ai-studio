@@ -1,5 +1,6 @@
 package mrhi3.ai.studio
 
+import MatchingCards
 import MatchingGame
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -104,12 +105,19 @@ fun sourceScreen(sources: List<Source>) {
         return
     }
 
-    if(isMatchingCards){
+    if (isMatchingCards) {
         val gameSource = getSource()
         if (gameSource != null) {
             MatchingGame(
                 mode = "GameList",
-                gameSource = gameSource.cards!!
+                gameSource = MatchingCards(
+                    gameSource.a!!,
+                    gameSource.b!!,
+                    gameSource.c!!,
+                    gameSource.d!!,
+                    gameSource.e!!,
+                    gameSource.f!!
+                )
             )
         }
     }
@@ -225,8 +233,17 @@ fun sourceScreen(sources: List<Source>) {
                         "MatchingCards" -> {
                             Text(
                                 text = "카드 맞추기",
+                                style = MaterialTheme.typography.titleMedium
+                            )
+
+                            Text(
+                                text = """
+                                    ${source.a},${source.b},${source.c},
+                                    ${source.d},${source.e},${source.f}
+                                    """.trimIndent(),
                                 style = MaterialTheme.typography.bodyMedium
                             )
+
                             TextButton(
                                 onClick = {
                                     saveSource(source)
