@@ -266,7 +266,7 @@ fun CombinationGame(mode: String, gameSource: CombinationData = CombinationData(
                 modifier = Modifier
                     .fillMaxSize()
                     .background(
-                        Color(0xFFF5F5F5),
+                        color = Color(0xFFBB86FC),
                         shape = RoundedCornerShape(6.dp)
                     )
                     .padding(horizontal = 16.dp),
@@ -320,7 +320,7 @@ fun CombinationGame(mode: String, gameSource: CombinationData = CombinationData(
                     Column(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .background(color = Color.DarkGray)
+                            .background(Color(0xFFF5F5F5))
                             .padding(16.dp)
                     ) {
                         Text(
