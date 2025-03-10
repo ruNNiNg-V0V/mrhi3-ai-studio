@@ -256,7 +256,6 @@ fun CombinationGame(mode: String, gameSource: CombinationData = CombinationData(
             modifier = Modifier
                 .weight(1f)
                 .fillMaxWidth()
-                .padding(top = 16.dp, bottom = 8.dp)
                 .background(
                     color = Color(0xFFFFFFFF),
                     shape = RoundedCornerShape(8.dp)
@@ -268,8 +267,7 @@ fun CombinationGame(mode: String, gameSource: CombinationData = CombinationData(
                 modifier = Modifier
                     .fillMaxSize()
                     .background(
-                        color = Color(0xFFBB86FC),
-                        shape = RoundedCornerShape(6.dp)
+                        color = Color(0xFFBB86FC)
                     )
                     .padding(horizontal = 16.dp),
                 horizontalAlignment = Alignment.CenterHorizontally,
@@ -281,7 +279,7 @@ fun CombinationGame(mode: String, gameSource: CombinationData = CombinationData(
                         .weight(1f)
                         .padding(vertical = 16.dp),
                     shape = RoundedCornerShape(12.dp),
-                    colors = CardDefaults.cardColors(containerColor = Color(0xFFE0E0E0)),
+                    colors = CardDefaults.cardColors(containerColor = Color(0xFFFFF8DC)),
                     elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
                 ) {
                     Box(
@@ -327,16 +325,18 @@ fun CombinationGame(mode: String, gameSource: CombinationData = CombinationData(
                     ) {
                         Text(
                             text = "힌트",
-                            fontSize = 20.sp,
-                            color = Color.White,
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 24.sp,
+                            color = Color(0xFFBB86FC),
                             modifier = Modifier.padding(bottom = 8.dp)
                         )
 
                         comGameData.hints.forEach { hint ->
                             Text(
                                 text = "- $hint",
-                                fontSize = 16.sp,
-                                color = Color.White,
+                                fontWeight = FontWeight.Bold,
+                                fontSize = 20.sp,
+                                color = MaterialTheme.colorScheme.primary,
                                 modifier = Modifier
                                     .fillMaxWidth()
                                     .padding(bottom = 4.dp)
@@ -367,6 +367,7 @@ fun CombinationGame(mode: String, gameSource: CombinationData = CombinationData(
         Row(
             modifier = Modifier
                 .fillMaxWidth()
+                .background(color = Color(0xFFBB86FC))
                 .padding(top = 8.dp, bottom = 16.dp),
             horizontalArrangement = Arrangement.SpaceBetween  // 두 버튼 간의 공간을 동일하게
         ) {

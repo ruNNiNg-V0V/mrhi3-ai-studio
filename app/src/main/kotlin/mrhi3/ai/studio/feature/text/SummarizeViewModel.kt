@@ -146,7 +146,7 @@ class SummarizeViewModel(
 8. 키워드(k)에는 ps2 값을 저장하세요.
 9. 선택지(choices)에는 3개의 값입니다. k의 값을 포함한 세 개의 항목이며 나머지 두 값은 p와 전혀 관련이 없는 단어여야 합니다.
 10. 선택지(choices)에 들어있는 값들을 무작위로 배열해야 합니다.
-11. 힌트(hints)에는 ps2의 값의 세 가지 간단한 특징을 포함하여 각각 10자 이내로 리스트 형식으로 작성해야 합니다.
+11. 힌트(hints)에는 ps2의 값의 세 가지 간단한 특징을 포함하여 각각 20자 이내로 리스트 형식으로 작성해야 합니다.
 12. 답변은 질문(q), 키워드(k), 선택지(choices), 힌트(hints)를 포함해서 json만 보내세요.
         """.trimIndent()
         Log.d("getCombinationQize", "${gameData.choices}")
